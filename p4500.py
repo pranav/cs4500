@@ -8,15 +8,16 @@ import numpy
 def check_args():
   try:
     return len(sys.argv) == 3 and wave.open(sys.argv[1]) and wave.open(sys.argv[2])
-  except EOFError:
-    sys.stderr.write('ERROR Both files must be of WAV format\n')
-    return True
   except IOError:
+    sys.stderr.write('ERROR Usage: ./p4500 <path> <path>\n')
+    return False
+  except Exception:
+    sys.stderr.write('ERROR Both files must be of WAV format\n')
     return False
 
 
 # Normalize to single channel WAV
-# Normalize temp to 100 bpm
+# Normalize tempo to 100 bpm
 # Returns a file path string, example: "/tmp/newfile.wav"
 def normalize_wave_file(wavfile):
   pass
@@ -36,7 +37,6 @@ def match_comparator(wav1, wav2):
 def main():
   # Check arguments and check if WAV file
   if not check_args():
-    sys.stderr.write('ERROR Usage: ./p4500 <path> <path>\n')
     sys.exit(1)
 
   # Returns a file path, "/tmp/newfile.wav"
