@@ -15,7 +15,6 @@ def check_args():
 
 if not check_args():
   sys.stderr.write('ERROR Usage: ./p4500 <path> <path>\n')
-
-
-sys.exit(0)
-
+  sys.exit(1)
+ else:
+  sys.exit(0)
