@@ -33,6 +33,16 @@ def get_fft(wavfile):
 def match_comparator(wav1, wav2):
   pass
 
+# Reads a WAV file from file
+# Returns:
+#  rate : Int (sample rate of wave file)
+#  data : numpy array (data read from wave file)
+def read_wav_from_file(path):
+  return scipy.io.wavfile.read( path )
+
+# Write a WAV file to file
+def write_wav_to_file(path, rate, data):
+  scipy.io.wavfile.write( path, rate, data )
 
 def main():
   # Check arguments and check if WAV file
