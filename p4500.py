@@ -3,7 +3,7 @@
 import sys
 import wave
 import numpy
-
+import scipy.io.wavfile
 
 def check_args():
   try:
@@ -20,7 +20,13 @@ def check_args():
 # Normalize tempo to 100 bpm
 # Returns a file path string, example: "/tmp/newfile.wav"
 def normalize_wave_file(wavfile):
-  pass
+  # Read the file
+  raw_file = read_wav_from_file( wavfile )
+
+  sample_rate = raw_file[0]
+  wave_data = raw_file[1]
+
+  print( wave_data )
 
 
 # numpy.fft should break the file into chunks and perform an fft
