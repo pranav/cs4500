@@ -59,6 +59,7 @@ def write_wav_to_file(path, rate, data):
 def euclidean_distance(arr_1, arr_2):
   if (arr_1.size != arr_2.size):
     sys.stderr.write('INTERNAL ERROR Arrays must be of same size\n')
+    return
 
   # Array for holding differences
   differences = numpy.zeros(arr_1.size, dtype=numpy.complex128)
@@ -66,7 +67,6 @@ def euclidean_distance(arr_1, arr_2):
   # Calculate differences
   for i in range(arr_1.size):
     differences[i] = arr_2[i] - arr_1[i]
-    return
 
   # Square and sum differences
   sq_diffs = [diff * diff for diff in differences]
