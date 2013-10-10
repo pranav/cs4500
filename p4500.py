@@ -94,5 +94,5 @@ def main():
     print "MATCH"
   else:
     print "NO MATCH"
-
-main()
+if __name__ == '__main__':
+  main()
