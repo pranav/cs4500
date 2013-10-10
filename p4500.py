@@ -51,7 +51,7 @@ def read_wav_from_file(path):
 def write_wav_to_file(path, rate, data):
   scipy.io.wavfile.write( path, rate, data )
 
-# Compute the euclidean distance between two arrays
+# Compute the euclidean distance between two numpy arrays
 # Note: if the argument arrays contain complex numbers, the imaginary distance
 #       will be eliminated
 # Returns:
