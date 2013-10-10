@@ -4,6 +4,7 @@ import sys
 import wave
 import numpy
 import scipy.io.wavfile
+import math
 
 def check_args():
   try:
@@ -49,6 +50,31 @@ def read_wav_from_file(path):
 # Write a WAV file to file
 def write_wav_to_file(path, rate, data):
   scipy.io.wavfile.write( path, rate, data )
+
+# Compute the euclidean distance between two arrays
+# Note: if the argument arrays contain complex numbers, the imaginary distance
+#       will be eliminated
+# Returns:
+#   distance: Float (real distance between the two arrays)
+def euclidean_distance(arr_1, arr_2):
+  if (arr_1.size != arr_2.size):
+    sys.stderr.write('INTERNAL ERROR Arrays must be of same size\n')
+
+  # Array for holding differences
+  differences = numpy.zeros(arr_1.size, dtype=numpy.complex128)
+
+  # Calculate differences
+  for i in range(arr_1.size):
+    differences[i] = arr_2[i] - arr_1[i]
+    return
+
+  # Square and sum differences
+  sq_diffs = [diff * diff for diff in differences]
+  sum_sq_diffs = sum(sq_diffs)
+
+  # Return distance value
+  # This is where the imaginary portion goes away
+  return math.sqrt(sum_sq_diffs)
 
 def main():
   # Check arguments and check if WAV file
