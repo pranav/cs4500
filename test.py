@@ -37,16 +37,16 @@ class TestFileNormalization(unittest.TestCase):
 	def setUp(self):
     pass
 
-  def output_file_is_in_mono(self):
-    pass
-
-  def output_file_hz_is_44100(self):
-    pass
-
   def output_file_exists(self):
     pass
 
   def test_output_file_is_in_tmp(self):
+    pass
+
+  def output_file_is_in_mono(self):
+    pass
+
+  def output_file_hz_is_44100(self):
     pass
 
 if __name__ == '__main__':
