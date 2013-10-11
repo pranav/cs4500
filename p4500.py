@@ -6,6 +6,7 @@ import numpy
 import numpy.fft
 import scipy.io.wavfile
 import math
+import audioop
 
 
 # Global variables used to normalize WAVE files
@@ -44,10 +45,12 @@ def normalize_wave_file(wavfile):
 
   wf.close()
 
+  mono_frames = audioop.tomono(frames, 2, 1, 1)
+
   # Create a copy of it with new parameters
   wf = wave.open( output_path, 'wb' )
   wf.setparams( (NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE" ) )
-  wf.writeframes( frames )
+  wf.writeframes( mono_frames )
 
   wf.close()
 
