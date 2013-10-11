@@ -3,6 +3,7 @@
 import sys
 import wave
 import numpy
+import numpy.fft
 import scipy.io.wavfile
 import math
 
@@ -56,7 +57,9 @@ def normalize_wave_file(wavfile):
 # numpy.fft should break the file into chunks and perform an fft
 # return the array/fft
 def get_fft(wavfile):
-  pass
+  (sample, data) = read_wav_from_file( wavfile )
+
+  return numpy.fft.fft( data )
 
 
 # Compare the 2 FFTs using crazy linear distance thingys
@@ -96,6 +99,9 @@ def main():
 
   fft_wav1 = get_fft(wav1)
   fft_wav2 = get_fft(wav2)
+
+  print( fft_wav1 )
+  print( fft_wav2 )
 
   match = match_comparator(fft_wav1, fft_wav2)
 
