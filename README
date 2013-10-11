@@ -28,5 +28,5 @@ Third Party Software Used
 -------------------------
 
 1. Python 2.7 and several modules installed on the CCIS Linux
-   machines (wave, numpy, scipy, math)
+   machines (wave, numpy, scipy, math, re, audioop)
 
