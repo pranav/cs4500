@@ -33,5 +33,21 @@ class TestEuclideanDistance(unittest.TestCase):
   def test_hypotenuse_is_sqrt_five(self):
     self.assertEqual(p4500.euclidean_distance(self.five_zeros, self.int_ones), math.sqrt(5))
 
+class TestFileNormalization(unittest.TestCase):
+	def setUp(self):
+    pass
+
+  def output_file_is_in_mono(self):
+    pass
+
+  def output_file_hz_is_44100(self):
+    pass
+
+  def output_file_exists(self):
+    pass
+
+  def test_output_file_is_in_tmp(self):
+    pass
+
 if __name__ == '__main__':
   unittest.main()
