@@ -6,6 +6,13 @@ import numpy
 import scipy.io.wavfile
 import math
 
+
+# Global variables used to normalize WAVE files
+FREQUENCY = 44100
+BITRATE = 16
+NUM_CHANNELS = 1
+SAMPLE_WIDTH = 2 # TODO: should this be 2?
+
 def check_args():
   try:
     return len(sys.argv) == 3 and wave.open(sys.argv[1]) and wave.open(sys.argv[2])
@@ -21,13 +28,29 @@ def check_args():
 # Normalize tempo to 100 bpm
 # Returns a file path string, example: "/tmp/newfile.wav"
 def normalize_wave_file(wavfile):
+  global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
+
+  output_path = wavfile + "_norm"
+
   # Read the file
-  raw_file = read_wav_from_file( wavfile )
+  wf = wave.open( wavfile, 'rb' )
 
-  sample_rate = raw_file[0]
-  wave_data = raw_file[1]
+  # Get the WAVE file parameters and read data
+  (nchannels, sampwidth, framerate, nframes, comptype, compname) = \
+    wf.getparams()
 
-  print( wave_data )
+  frames = wf.readframes( nframes )
+
+  wf.close()
+
+  # Create a copy of it with new parameters
+  wf = wave.open( output_path, 'wb' )
+  wf.setparams( (NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE" ) )
+  wf.writeframes( frames )
+
+  wf.close()
+
+  return output_path
 
 
 # numpy.fft should break the file into chunks and perform an fft
