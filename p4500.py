@@ -45,7 +45,7 @@ def normalize_wave_file(wavfile):
 
   wf.close()
 
-  mono_frames = audioop.tomono(frames, 2, 1, 1)
+  mono_frames = audioop.tomono(frames, sampwidth, 1, 1)
 
   # Create a copy of it with new parameters
   wf = wave.open( output_path, 'wb' )
