@@ -45,12 +45,14 @@ def normalize_wave_file(wavfile):
 
   wf.close()
 
-  mono_frames = audioop.tomono(frames, sampwidth, 1, 1)
+  # Convert to mono if file is stereo
+  if nchannels == 2:
+    frames = audioop.tomono( frames, sampwidth, 1, 1 )
 
   # Create a copy of it with new parameters
   wf = wave.open( output_path, 'wb' )
   wf.setparams( (NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE" ) )
-  wf.writeframes( mono_frames )
+  wf.writeframes( frames )
 
   wf.close()
 
