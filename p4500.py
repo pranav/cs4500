@@ -59,9 +59,6 @@ def write_wav_to_file(path, rate, data):
 # Returns:
 #   distance: Float (real distance between the two arrays)
 def euclidean_distance(arr_1, arr_2):
-  if (arr_1.size != arr_2.size):
-    sys.stderr.write('INTERNAL ERROR Arrays must be of same size\n')
-    return
   return numpy.linalg.norm(arr_1 - arr_2)
 
 
