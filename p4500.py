@@ -7,6 +7,7 @@ import numpy.fft
 import scipy.io.wavfile
 import math
 import audioop
+import re
 
 
 # Global variables used to normalize WAVE files
@@ -32,7 +33,8 @@ def check_args():
 def normalize_wave_file(wavfile):
   global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
 
-  output_path = wavfile + "_norm"
+  filename = re.search(r'[^/]+$', wavfile).group()
+  output_path = '/tmp/' + filename + '_norm'
 
   # Read the file
   wf = wave.open( wavfile, 'rb' )
