@@ -55,11 +55,10 @@ class TestFileNormalization(unittest.TestCase):
 
 class TestMatching(unittest.TestCase):
   def setUp(self):
-    self.fft1 = [numpy.array(arr) for arr in [[1, 5, 8], [2, 4, 0], [2, 2, 1]]]
-    self.fft2 = [numpy.array(arr) for arr in [[2, 4, 0], [2, 2, 1]]]
-    self.fft3 = [numpy.array(arr)
-      for arr in [[0.9, 5.1, 7.9], [2, 4, 0.1], [1.9, 2.2, 1]]]
-    self.fft4 = [numpy.array(arr) for arr in [[7, 2, 4], [5, 5, 5], [1, 2, 5]]]
+    self.fft1 = numpy.array([[1, 5, 8], [2, 4, 0], [2, 2, 1]])
+    self.fft2 = numpy.array([[2, 4, 0], [2, 2, 1]])
+    self.fft3 = numpy.array([[0.9, 5.1, 7.9], [2, 4, 0.1], [1.9, 2.2, 1]])
+    self.fft4 = numpy.array([[7, 2, 4], [5, 5, 5], [1, 2, 5]])
 
   def test_exact_match(self):
     self.assertTrue(p4500.compare(self.fft1, self.fft1))
