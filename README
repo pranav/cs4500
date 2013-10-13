@@ -27,6 +27,7 @@ shared file system and is in WAVE format.
 Third Party Software Used
 -------------------------
 
-1. Python 2.7 and several modules installed on the CCIS Linux
-   machines (wave, numpy, scipy, math, re, audioop)
+1. Python 2.6.4 and several modules installed on the CCIS Linux
+   machines (audioop, itertools, os, re, wave, sys, numpy,
+   numpy.fft, scipy.io.wavfile)
 

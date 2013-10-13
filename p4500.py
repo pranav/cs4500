@@ -1,21 +1,23 @@
 #!/usr/bin/python
 
-import sys
+import audioop
+import itertools
+import os
+import re
 import wave
+import sys
+
 import numpy
 import numpy.fft
 import scipy.io.wavfile
-import math
-import audioop
-import re
 
 
-# Global variables used to normalize WAVE files
 FREQUENCY = 44100
 BITRATE = 16
 NUM_CHANNELS = 1
 SAMPLE_WIDTH = 2
 COMP_CHUNK_SIZE = 1 # Compare 1 second at a time
+NORMALIZED_MATCH_THRESHOLD = 0.5
 
 def check_args():
   try:
@@ -29,7 +31,7 @@ def check_args():
 
 
 # Normalize to single channel WAV
-# Normalize tempo to 100 bpm
+# TODO: Normalize tempo to 100 bpm
 # Returns a file path string, example: "/tmp/newfile.wav"
 def normalize_wave_file(wavfile):
   global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
@@ -81,10 +83,31 @@ def get_fft(wavfile):
   return fft_out
 
 
-# Compare the 2 FFTs using crazy linear distance thingys
-#TODO: Better comment
-def match_comparator(wav1, wav2):
-  pass
+# Compare two lists of lists of numbers
+def compare(ffts1, ffts2):
+  shorter = ffts1
+  longer = ffts2
+  if len(ffts1) > len(ffts2):
+    shorter = ffts2
+    longer = ffts1
+  match_threshold = (max(numpy.amax(ffts1[0]), numpy.amax(ffts2[0])) *
+                     NORMALIZED_MATCH_THRESHOLD)
+  i = 0
+  j = 0
+  j_prev = 0
+  while i < len(shorter):
+    if j == len(longer) or len(shorter) - i > len(longer) - j:
+      return False
+    if euclidean_distance(shorter[i], longer[j]) < match_threshold:
+      if i == 0:
+        j_prev = j
+      i += 1
+      j += 1
+    else:
+      i = 0      
+      j = j_prev + 1
+      j_prev = j
+  return True
 
 
 # Reads a WAV file from file
@@ -103,8 +126,8 @@ def write_wav_to_file(path, rate, data):
 # Compute the Euclidean distance between two numpy arrays
 # Returns:
 #   distance: Float (real distance between the two arrays)
-def euclidean_distance(arr_1, arr_2):
-  return numpy.linalg.norm(arr_1 - arr_2)
+def euclidean_distance(arr1, arr2):
+  return numpy.linalg.norm(arr1 - arr2)
 
 
 def main():
@@ -113,16 +136,13 @@ def main():
     sys.exit(1)
 
   # Returns a file path, "/tmp/newfile.wav"
-  wav1 = normalize_wave_file(sys.argv[1])
-  wav2 = normalize_wave_file(sys.argv[2])
+  audio_file1 = normalize_wave_file(sys.argv[1])
+  audio_file2 = normalize_wave_file(sys.argv[2])
 
-  fft_wav1 = get_fft(wav1)
-  fft_wav2 = get_fft(wav2)
+  ffts1 = get_fft(audio_file1)
+  ffts2 = get_fft(audio_file2)
 
-  print( fft_wav1 )
-  print( fft_wav2 )
-
-  match = match_comparator(fft_wav1, fft_wav2)
+  match = compare(ffts1, ffts2)
 
   if match:
     print "MATCH"
