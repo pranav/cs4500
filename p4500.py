@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import audioop
-import itertools
 import os
 import re
 import wave
@@ -115,7 +114,10 @@ def compare(ffts1, ffts2):
 #  rate : Int (sample rate of WAVE file)
 #  data : numpy array (data read from WAVE file)
 def read_wave_from_file(path):
-  return scipy.io.wavfile.read(path)
+  with open(os.devnull, 'w') as sys.stdout: # work-around for SciPy bug
+    (rate, data) = scipy.io.wavfile.read(path)
+  sys.stdout = sys.__stdout__
+  return (rate, data)
 
 
 # Write a WAVE file
