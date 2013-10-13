@@ -11,10 +11,10 @@ class TestEuclideanDistance(unittest.TestCase):
   def setUp(self):
     self.two_zeros = numpy.zeros(2, dtype=int)
     self.five_zeros = numpy.zeros(5)
-    self.three_four = numpy.array([3,4], dtype=int)
+    self.three_four = numpy.array([3, 4], dtype=int)
     self.complex_three_four = numpy.array([-3, 4j], dtype=numpy.complex128)
-    self.int_ones = numpy.array([1,1,1,1,1], dtype=int)
-    self.complex_ones = numpy.array([1,1,1,1,1], dtype=numpy.complex128)
+    self.int_ones = numpy.array([1, 1, 1, 1, 1], dtype=int)
+    self.complex_ones = numpy.array([1, 1, 1, 1, 1], dtype=numpy.complex128)
 
   def test_zeros(self):
     self.assertEqual(p4500.euclidean_distance(self.two_zeros, self.two_zeros), 0)

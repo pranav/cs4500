@@ -26,38 +26,38 @@ def check_args():
     sys.stderr.write('ERROR Usage: ./p4500 <path> <path>\n')
     return False
   except Exception:
-    sys.stderr.write('ERROR Both files must be of WAV format\n')
+    sys.stderr.write('ERROR Both files must be of WAVE format\n')
     return False
 
 
-# Normalize to single channel WAV
+# Normalize to single channel WAVE
 # TODO: Normalize tempo to 100 bpm
 # Returns a file path string, example: "/tmp/newfile.wav"
-def normalize_wave_file(wavfile):
+def normalize_wave_file(audio_file):
   global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
 
-  filename = re.search(r'[^/]+$', wavfile).group()
+  filename = re.search(r'[^/]+$', audio_file).group()
   output_path = '/tmp/' + filename + '_norm'
 
   # Read the file
-  wf = wave.open( wavfile, 'rb' )
+  wf = wave.open(audio_file, 'rb')
 
   # Get the WAVE file parameters and read data
   (nchannels, sampwidth, framerate, nframes, comptype, compname) = \
     wf.getparams()
 
-  frames = wf.readframes( nframes )
+  frames = wf.readframes(nframes)
 
   wf.close()
 
   # Convert to mono if file is stereo
   if nchannels == 2:
-    frames = audioop.tomono( frames, sampwidth, 1, 1 )
+    frames = audioop.tomono(frames, sampwidth, 1, 1)
 
   # Create a copy of it with new parameters
-  wf = wave.open( output_path, 'wb' )
-  wf.setparams( (NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE" ) )
-  wf.writeframes( frames )
+  wf = wave.open(output_path, 'wb')
+  wf.setparams((NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE"))
+  wf.writeframes(frames)
 
   wf.close()
 
@@ -66,10 +66,10 @@ def normalize_wave_file(wavfile):
 
 # numpy.fft should break the file into chunks and perform an fft
 # return the array/fft
-def get_fft(wavfile):
+def get_fft(audio_file):
   global COMP_CHUNK_SIZE
 
-  (sample, data) = read_wav_from_file( wavfile )
+  (sample, data) = read_wave_from_file(audio_file)
   total_seconds = (data.size / sample) / COMP_CHUNK_SIZE
 
   fft_out = numpy.ndarray(shape=(total_seconds, sample), dtype=numpy.complex128)
@@ -110,17 +110,17 @@ def compare(ffts1, ffts2):
   return True
 
 
-# Reads a WAV file from file
+# Reads a WAVE file
 # Returns:
-#  rate : Int (sample rate of wave file)
-#  data : numpy array (data read from wave file)
-def read_wav_from_file(path):
-  return scipy.io.wavfile.read( path )
+#  rate : Int (sample rate of WAVE file)
+#  data : numpy array (data read from WAVE file)
+def read_wave_from_file(path):
+  return scipy.io.wavfile.read(path)
 
 
-# Write a WAV file to file
-def write_wav_to_file(path, rate, data):
-  scipy.io.wavfile.write( path, rate, data )
+# Write a WAVE file
+def write_wave_to_file(path, rate, data):
+  scipy.io.wavfile.write(path, rate, data)
 
 
 # Compute the Euclidean distance between two numpy arrays
@@ -131,7 +131,7 @@ def euclidean_distance(arr1, arr2):
 
 
 def main():
-  # Check arguments and check if WAV file
+  # Check arguments and check if WAVE file
   if not check_args():
     sys.exit(1)
 
