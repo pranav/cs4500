@@ -14,7 +14,8 @@ import re
 FREQUENCY = 44100
 BITRATE = 16
 NUM_CHANNELS = 1
-SAMPLE_WIDTH = 2 # TODO: should this be 2?
+SAMPLE_WIDTH = 2
+COMP_CHUNK_SIZE = 1 # Compare 1 second at a time
 
 def check_args():
   try:
@@ -64,9 +65,20 @@ def normalize_wave_file(wavfile):
 # numpy.fft should break the file into chunks and perform an fft
 # return the array/fft
 def get_fft(wavfile):
-  (sample, data) = read_wav_from_file( wavfile )
+  global COMP_CHUNK_SIZE
 
-  return numpy.fft.fft( data )
+  (sample, data) = read_wav_from_file( wavfile )
+  total_seconds = (data.size / sample) / COMP_CHUNK_SIZE
+
+  fft_out = numpy.ndarray(shape=(total_seconds, sample), dtype=numpy.complex128)
+
+  second = 0
+  while second < total_seconds:
+    fft = numpy.fft.fft(data[second*sample : (second+COMP_CHUNK_SIZE)*sample])
+    fft_out[second] = fft
+    second += COMP_CHUNK_SIZE
+
+  return fft_out
 
 
 # Compare the 2 FFTs using crazy linear distance thingys
