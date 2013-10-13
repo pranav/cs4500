@@ -68,44 +68,58 @@ def normalize_wave_file(audio_file):
 def get_fft(audio_file):
   global COMP_CHUNK_SIZE
 
+  # Read the file, and determine its length in 'chunks'
   (sample, data) = read_wave_from_file(audio_file)
-  total_seconds = (data.size / sample) / COMP_CHUNK_SIZE
+  total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
 
-  fft_out = numpy.ndarray(shape=(total_seconds, sample), dtype=numpy.complex128)
+  # Allocate space for the FFT decompsitions of each chunk of sound data
+  fft_out = numpy.ndarray(shape=(total_chunks, sample), dtype=numpy.complex128)
 
-  second = 0
-  while second < total_seconds:
-    fft = numpy.fft.fft(data[second*sample : (second+COMP_CHUNK_SIZE)*sample])
-    fft_out[second] = fft
-    second += COMP_CHUNK_SIZE
+  # Loop through all chunks, computing their FFT decompositions
+  chunk = 0
+  while chunk < total_chunks:
+    fft = numpy.fft.fft(data[chunk*sample : (chunk+COMP_CHUNK_SIZE)*sample])
+    fft_out[chunk] = fft
+    chunk += COMP_CHUNK_SIZE
 
   return fft_out
 
 
-# Compare two lists of lists of numbers
+# Compare the FFT decomposition of one file to the FFT decompsition of another
+# Return True if the entirety of the shorter file can be located in sequential
+# order within the longer file
+# Otherwise return False
 def compare(ffts1, ffts2):
+  # Determine which FFT data is longer
   shorter = ffts1
   longer = ffts2
   if len(ffts1) > len(ffts2):
     shorter = ffts2
     longer = ffts1
+
+  # Set the threshold for a match
   match_threshold = (max(numpy.amax(ffts1[0]), numpy.amax(ffts2[0])) *
                      NORMALIZED_MATCH_THRESHOLD)
-  i = 0
-  j = 0
-  j_prev = 0
+
+  i = 0 # Current chunk of FFT data in smaller file
+  j = 0 # Current chunk of FFT data in longer file
+  j_prev = 0 # Chunk of FFT data in longer file where sequential matching began
   while i < len(shorter):
+    # Bottom of longer file reached, no match found
     if j == len(longer) or len(shorter) - i > len(longer) - j:
       return False
+    # Current examined chunks match
     if euclidean_distance(shorter[i], longer[j]) < match_threshold:
       if i == 0:
         j_prev = j
       i += 1
       j += 1
+    # Current examined chunks do not match
     else:
       i = 0      
       j = j_prev + 1
       j_prev = j
+  # If here, bottom of smaller file reached, match found
   return True
 
 
