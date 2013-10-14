@@ -2,7 +2,12 @@
 
 import math
 import numpy
+import os
+import os.path
+import random
+import struct
 import unittest
+import wave
 
 import p4500
 
@@ -38,19 +43,61 @@ class TestEuclideanDistance(unittest.TestCase):
 
 class TestFileNormalization(unittest.TestCase):
   def setUp(self):
-    pass
+    values = []
+    for i in range(0, 100000):
+      value = random.randint(-32767, 32767)
+      packed_value = struct.pack('h', value)
+      values.append(packed_value)
+      values.append(packed_value)
+
+    value_str = ''.join(values)
+    self.noise_file = 'noise.wav'
+    self.slow_noise_file = 'slow_noise.wav'
+
+    noise_output = wave.open(self.noise_file, 'w')
+    noise_output.setparams((2, 2, 44100, 0, 'NONE', 'NONE'))
+    noise_output.writeframes(value_str)
+    noise_output.close()
+
+    slow_noise_output = wave.open(self.slow_noise_file, 'w')
+    slow_noise_output.setparams((2, 2, 30000, 0, 'NONE', 'NONE'))
+    slow_noise_output.writeframes(value_str)
+    noise_output.close()
+
+    self.noise_file_norm = p4500.normalize_wave_file(self.noise_file)
+    self.slow_noise_file_norm = p4500.normalize_wave_file(self.slow_noise_file)
+
+    nfn = wave.open(self.noise_file_norm)
+    nfnparam = nfn.getparams()
+    self.noise_norm_channels = nfnparam[0]
+    self.noise_norm_hz = nfnparam[2]
+    nfn.close()
+
+    snfn = wave.open(self.slow_noise_file_norm)
+    snfnparam = snfn.getparams()
+    self.slow_noise_norm_channels = snfnparam[0]
+    self.slow_noise_norm_hz = snfnparam[2]
+    snfn.close()
+
+  def tearDown(self):
+    os.remove(self.noise_file)
+    os.remove(self.slow_noise_file)
 
   def output_file_exists(self):
-    pass
+    self.assertTrue(os.path.isfile(self.noise_file_norm))
+    self.assertTrue(os.path.isfile(self.slow_noise_file_norm))
 
   def test_output_file_is_in_tmp(self):
-    pass
+    self.assertTrue(self.noise_file_norm.startswith('/tmp'))
+    self.assertTrue(self.slow_noise_file_norm.startswith('/tmp'))
 
   def output_file_is_in_mono(self):
-    pass
+    self.assertEqual(self.noise_norm_channels, p4500.NUM_CHANNELS)
+    self.assertEqual(self.slow_noise_norm_channels, p4500.NUM_CHANNELS)
 
   def output_file_hz_is_44100(self):
-    pass
+    self.assertEqual(self.noise_norm_hz, p4500.FREQUENCY)
+    self.assertEqual(self.slow_noise_norm_hz, p4500.FREQUENCY)
 
 
 class TestMatching(unittest.TestCase):
