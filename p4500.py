@@ -15,8 +15,8 @@ FREQUENCY = 44100
 BITRATE = 16
 NUM_CHANNELS = 1
 SAMPLE_WIDTH = 2
-COMP_CHUNK_SIZE = 1 # Compare 1 second at a time
-NORMALIZED_MATCH_THRESHOLD = 0.5
+COMP_CHUNK_SIZE = 0.5 # Compare a half-second at a time
+NORMALIZED_MATCH_THRESHOLD = 5
 
 def check_args():
   try:
@@ -73,14 +73,15 @@ def get_fft(audio_file):
   total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
 
   # Allocate space for the FFT decompsitions of each chunk of sound data
-  fft_out = numpy.ndarray(shape=(total_chunks, sample), dtype=numpy.complex128)
+  fft_out = numpy.ndarray(shape=(total_chunks, sample*COMP_CHUNK_SIZE), 
+                          dtype=numpy.complex128)
 
   # Loop through all chunks, computing their FFT decompositions
   chunk = 0
   while chunk < total_chunks:
-    fft = numpy.fft.fft(data[chunk*sample : (chunk+COMP_CHUNK_SIZE)*sample])
+    fft = numpy.fft.fft(data[chunk*COMP_CHUNK_SIZE*sample : (chunk+1)*COMP_CHUNK_SIZE*sample])
     fft_out[chunk] = fft
-    chunk += COMP_CHUNK_SIZE
+    chunk += 1
 
   return fft_out
 
