@@ -3,6 +3,10 @@ import numpy
 from config import *
 
 
+# Computes the distance between the two arrays.
+def distance(a, b):
+  return ((a - b) ** 2).mean()
+
 # Compare the FFT decomposition of one file to the FFT decompsition of another
 # Return True if the entirety of the shorter file can be located in sequential
 # order within the longer file
@@ -26,6 +30,8 @@ def compare(ffts1, ffts2):
 
   # Loop invariant
   #  0 <= i <= len(shorter)
+  #  0 <= j <= len(longer)
+  #  0 <= j_prev <= j
   #  compares FFTs of each of the two FFTs by finding FFTs that sit within the
   #   match_threshold
 
@@ -34,7 +40,7 @@ def compare(ffts1, ffts2):
     if j == len(longer) or len(shorter) - i > len(longer) - j:
       return False
     # Current examined chunks match
-    if euclidean_distance(shorter[i], longer[j]) < match_threshold:
+    if distance(shorter[i], longer[j]) < match_threshold:
       if i == 0:
         j_prev = j
       i += 1
