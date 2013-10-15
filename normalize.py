@@ -63,6 +63,12 @@ def get_fft(audio_file):
                           dtype=numpy.complex128)
 
   # Loop through all chunks, computing their FFT decompositions
+
+  # Loop invariant:
+  #   0 <= chunk <= total_chunks
+  #   results in an array (fft_out) of FFTs that correspond to the chunks of the
+  #    audio file
+
   chunk = 0
   while chunk < total_chunks:
     fft = numpy.fft.fft(data[chunk*COMP_CHUNK_SIZE*sample : (chunk+1)*COMP_CHUNK_SIZE*sample])

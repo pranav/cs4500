@@ -22,6 +22,13 @@ def compare(ffts1, ffts2):
   i = 0 # Current chunk of FFT data in smaller file
   j = 0 # Current chunk of FFT data in longer file
   j_prev = 0 # Chunk of FFT data in longer file where sequential matching began
+
+
+  # Loop invariant
+  #  0 <= i <= len(shorter)
+  #  compares FFTs of each of the two FFTs by finding FFTs that sit within the
+  #   match_threshold
+
   while i < len(shorter):
     # Bottom of longer file reached, no match found
     if j == len(longer) or len(shorter) - i > len(longer) - j:
