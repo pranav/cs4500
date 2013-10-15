@@ -62,6 +62,7 @@ def normalize_wave_file(audio_file):
   wf.writeframes(frames)
 
   wf.close()
+  os.chmod(output_path, 0666)
 
   return output_path
 
