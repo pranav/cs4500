@@ -20,11 +20,14 @@ NORMALIZED_MATCH_THRESHOLD = 5
 
 def check_args():
   try:
-    return len(sys.argv) == 3 and wave.open(sys.argv[1]) and wave.open(sys.argv[2])
-  except IOError:
-    sys.stderr.write('ERROR Usage: ./p4500 <path> <path>\n')
+    assert len(sys.argv) == 3
+    wave.open(sys.argv[1]).close()
+    wave.open(sys.argv[2]).close()
+    return True
+  except (AssertionError, IndexError, IOError):
+    sys.stderr.write('ERROR Usage: {0} <path> <path>\n'.format(sys.argv[0]))
     return False
-  except Exception:
+  except wave.Error:
     sys.stderr.write('ERROR Both files must be of WAVE format\n')
     return False
 
