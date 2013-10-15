@@ -13,21 +13,19 @@ Daniel Moran <moran.dan@husky.neu.edu>
 Usage
 -----
 
-To run our software on the CCIS Linux machines, `cd` into the
-directory containing this software's executable and execute 
-the command:
+To run our software on the CCIS Linux machines, `cd` into the directory
+containing this software's executable and execute the command:
 
-$ ./p4500 <path> <path>
+    $ ./p4500 <path> <path>
 
-where <path> is a Linux path to a file that exists on the CCIS 
-shared file system and is in WAVE format.
+where `<path>` is a Linux path to a file that exists on the CCIS shared
+file system and is in WAVE format.
 
 
 
 Third Party Software Used
 -------------------------
 
-1. Python 2.6.4 and several modules installed on the CCIS Linux
-   machines (audioop, itertools, os, re, wave, sys, numpy,
-   numpy.fft, scipy.io.wavfile)
-
+* Python 2.6.4 and several modules installed on the CCIS Linux
+  machines (`audioop`, `numpy`, `numpy.fft`, `os`, `re`,
+  `scipy.io.wavfile`, `sys`, `wave`)
