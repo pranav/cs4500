@@ -10,7 +10,9 @@ import wave
 
 import numpy
 
-import p4500
+import comparator
+import config
+import normalize
 
 
 class TestEuclideanDistance(unittest.TestCase):
@@ -23,23 +25,23 @@ class TestEuclideanDistance(unittest.TestCase):
     self.complex_ones = numpy.array([1, 1, 1, 1, 1], dtype=numpy.complex128)
 
   def test_zeros(self):
-    self.assertEqual(p4500.euclidean_distance(self.two_zeros, self.two_zeros), 0)
-    self.assertEqual(p4500.euclidean_distance(self.five_zeros, self.five_zeros), 0)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.two_zeros), 0)
+    self.assertEqual(comparator.euclidean_distance(self.five_zeros, self.five_zeros), 0)
 
   def test_distance_ones_to_ones(self):
-    self.assertEqual(p4500.euclidean_distance(self.int_ones, self.int_ones), 0)
-    self.assertEqual(p4500.euclidean_distance(self.complex_ones,self.complex_ones), 0)
-    self.assertEqual(p4500.euclidean_distance(self.int_ones, self.complex_ones), 0)
-    self.assertEqual(p4500.euclidean_distance(self.complex_ones, self.int_ones), 0)
+    self.assertEqual(comparator.euclidean_distance(self.int_ones, self.int_ones), 0)
+    self.assertEqual(comparator.euclidean_distance(self.complex_ones,self.complex_ones), 0)
+    self.assertEqual(comparator.euclidean_distance(self.int_ones, self.complex_ones), 0)
+    self.assertEqual(comparator.euclidean_distance(self.complex_ones, self.int_ones), 0)
 
   def test_hypotenuse_is_five(self):
-    self.assertEqual(p4500.euclidean_distance(self.two_zeros, self.three_four), 5)
-    self.assertEqual(p4500.euclidean_distance(self.three_four, self.two_zeros), 5)
-    self.assertEqual(p4500.euclidean_distance(self.two_zeros, self.complex_three_four), 5)
-    self.assertEqual(p4500.euclidean_distance(self.complex_three_four, self.two_zeros), 5)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.three_four), 5)
+    self.assertEqual(comparator.euclidean_distance(self.three_four, self.two_zeros), 5)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.complex_three_four), 5)
+    self.assertEqual(comparator.euclidean_distance(self.complex_three_four, self.two_zeros), 5)
 
   def test_hypotenuse_is_sqrt_five(self):
-    self.assertEqual(p4500.euclidean_distance(self.five_zeros, self.int_ones), math.sqrt(5))
+    self.assertEqual(comparator.euclidean_distance(self.five_zeros, self.int_ones), math.sqrt(5))
 
 
 class TestFileNormalization(unittest.TestCase):
@@ -65,8 +67,8 @@ class TestFileNormalization(unittest.TestCase):
     slow_noise_output.writeframes(value_str)
     noise_output.close()
 
-    self.noise_file_norm = p4500.normalize_wave_file(self.noise_file)
-    self.slow_noise_file_norm = p4500.normalize_wave_file(self.slow_noise_file)
+    self.noise_file_norm = normalize.normalize_wave_file(self.noise_file)
+    self.slow_noise_file_norm = normalize.normalize_wave_file(self.slow_noise_file)
 
     nfn = wave.open(self.noise_file_norm)
     nfnparam = nfn.getparams()
@@ -93,12 +95,12 @@ class TestFileNormalization(unittest.TestCase):
     self.assertTrue(self.slow_noise_file_norm.startswith('/tmp'))
 
   def output_file_is_in_mono(self):
-    self.assertEqual(self.noise_norm_channels, p4500.NUM_CHANNELS)
-    self.assertEqual(self.slow_noise_norm_channels, p4500.NUM_CHANNELS)
+    self.assertEqual(self.noise_norm_channels, NUM_CHANNELS)
+    self.assertEqual(self.slow_noise_norm_channels, NUM_CHANNELS)
 
   def output_file_hz_is_44100(self):
-    self.assertEqual(self.noise_norm_hz, p4500.FREQUENCY)
-    self.assertEqual(self.slow_noise_norm_hz, p4500.FREQUENCY)
+    self.assertEqual(self.noise_norm_hz, FREQUENCY)
+    self.assertEqual(self.slow_noise_norm_hz, FREQUENCY)
 
 
 class TestMatching(unittest.TestCase):
@@ -109,17 +111,17 @@ class TestMatching(unittest.TestCase):
     self.fft4 = numpy.array([[7, 2, 4], [5, 25, 125], [1, 2, 5]])
 
   def test_exact_match(self):
-    self.assertTrue(p4500.compare(self.fft1, self.fft1))
+    self.assertTrue(comparator.compare(self.fft1, self.fft1))
 
   def test_exact_partial_match(self):
-    self.assertTrue(p4500.compare(self.fft1, self.fft2))
+    self.assertTrue(comparator.compare(self.fft1, self.fft2))
 
   def test_fuzzy_match(self):
-    self.assertTrue(p4500.compare(self.fft1, self.fft3))
-    self.assertTrue(p4500.compare(self.fft3, self.fft1))
+    self.assertTrue(comparator.compare(self.fft1, self.fft3))
+    self.assertTrue(comparator.compare(self.fft3, self.fft1))
 
   def test_not_a_match(self):
-    self.assertFalse(p4500.compare(self.fft1, self.fft4))
+    self.assertFalse(comparator.compare(self.fft1, self.fft4))
 
 
 if __name__ == '__main__':
