@@ -1,8 +1,9 @@
-import os
-import sys
 import audioop
+import os
 import re
+import sys
 import wave
+
 import numpy
 import numpy.fft
 
@@ -69,4 +70,3 @@ def get_fft(audio_file):
     chunk += 1
 
   return fft_out
-

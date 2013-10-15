@@ -1,6 +1,8 @@
-import scipy.io.wavfile
-import sys
 import os
+import sys
+
+import scipy.io.wavfile
+
 
 # Reads a WAVE file
 # Returns:
@@ -16,4 +18,3 @@ def read_wave_from_file(path):
 # Write a WAVE file
 def write_wave_to_file(path, rate, data):
   scipy.io.wavfile.write(path, rate, data)
-

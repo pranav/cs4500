@@ -2,6 +2,7 @@ import numpy
 
 from config import *
 
+
 # Compare the FFT decomposition of one file to the FFT decompsition of another
 # Return True if the entirety of the shorter file can be located in sequential
 # order within the longer file
@@ -38,7 +39,6 @@ def compare(ffts1, ffts2):
       j_prev = j
   # If here, bottom of smaller file reached, match found
   return True
-
 
 
 # Compute the Euclidean distance between two numpy arrays
