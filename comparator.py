@@ -2,11 +2,6 @@ import numpy
 
 from config import *
 
-
-# Computes the distance between the two arrays.
-def distance(a, b):
-  return ((a - b) ** 2).mean()
-
 # Compare the FFT decomposition of one file to the FFT decompsition of another
 # Return True if the entirety of the shorter file can be located in sequential
 # order within the longer file
@@ -59,3 +54,8 @@ def compare(ffts1, ffts2):
 #   distance: Float (real distance between the two arrays)
 def euclidean_distance(arr1, arr2):
   return numpy.linalg.norm(arr1 - arr2)
+
+# Computes the distance between the two arrays using the Mean Squared Error
+def distance(a, b):
+  return ((a - b) ** 2).mean()
+
