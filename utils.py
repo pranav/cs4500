@@ -21,7 +21,7 @@ def write_wave_to_file(path, rate, data):
   scipy.io.wavfile.write(path, rate, data)
 
 # Get a path for the given file within /tmp/
-def get_tmp_path(file):
+def get_tmp_path(audio_file):
   filename = re.search(r'[^/]+$', audio_file).group()
   tmp_path = '/tmp/' + filename
   return tmp_path
