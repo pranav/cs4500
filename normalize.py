@@ -1,6 +1,5 @@
 import audioop
 import os
-import re
 import sys
 import wave
 
@@ -17,8 +16,8 @@ from config import *
 def normalize_wave_file(audio_file):
   global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
 
-  filename = re.search(r'[^/]+$', audio_file).group()
-  output_path = '/tmp/' + filename + '_norm'
+  # Get path in /tmp/ to write to
+  output_path = utils.get_tmp_path(audio_file) + '_norm'
 
   # Read the file
   wf = wave.open(audio_file, 'rb')
@@ -48,6 +47,24 @@ def normalize_wave_file(audio_file):
 
   return output_path
 
+
+# Uses lame to convert an MP3 file to a WAVE file
+# Returns the path to the generated WAVE file
+def mp3_to_wav(mp3_file):
+
+  # Get path in /tmp/ to write to
+  output_path = utils.get_tmp_path(mp3_file) + '_wav'
+
+  # Run lame to decode the MP3 file to WAVE
+  os.system(
+    '/course/cs4500f13/bin/lame --decode --mp3input %s %s'%(mp3_file, output_path)
+  )
+  try:
+    os.chmod(output_path, 0666)
+  except OSError:
+    pass
+
+  return output_path
 
 # numpy.fft should break the file into chunks and perform an fft
 # return the array/fft

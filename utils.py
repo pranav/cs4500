@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 
 import scipy.io.wavfile
 
@@ -18,3 +19,9 @@ def read_wave_from_file(path):
 # Write a WAVE file
 def write_wave_to_file(path, rate, data):
   scipy.io.wavfile.write(path, rate, data)
+
+# Get a path for the given file within /tmp/
+def get_tmp_path(file):
+  filename = re.search(r'[^/]+$', audio_file).group()
+  tmp_path = '/tmp/' + filename
+  return tmp_path
