@@ -19,30 +19,29 @@ import normalize
 
 
 def check_args():
-  try:
-    assert len(sys.argv) == 3
-
-    return True
-  except (AssertionError, IndexError, IOError):
+  if (len(sys.argv) != 3 or
+      not (os.path.isfile(sys.argv[1]) and os.path.isfile(sys.argv[2]))):
     sys.stderr.write('ERROR Usage: {0} <path> <path>\n'.format(sys.argv[0]))
     return False
-  except wave.Error:
-    sys.stderr.write('ERROR Both files must be of WAVE format\n')
-    return False
+  return True
 
+
+# Check if the given file is a WAVE file
 def is_wave(path):
   try:
     wave.open(path).close()
     return True
-  except( IOError, wave.Error):
+  except (IOError, wave.Error):
     return False  
 
-# Check if the given file is an MP3 file using header information
+
+# Check if the given file is an MP3 file
 def is_mp3(path):
-  return "ID3" in subprocess.check_output(["file", "-b", path])
+  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b', path])
+
 
 def main():
-  # Check arguments and check if WAVE file
+  # Check arguments
   if not check_args():
     sys.exit(1)
 
@@ -50,15 +49,15 @@ def main():
   file2 = sys.argv[2]
   # Returns a file path, "/tmp/newfile.wav"
   if is_mp3(file1):
-    file1 = normalize.mp3_to_wav( file1 )
+    file1 = normalize.mp3_to_wav(file1)
   if is_mp3(file2):
-    file2 = normalize.mp3_to_wav( file2 )
+    file2 = normalize.mp3_to_wav(file2)
 
   if not (is_wave(file1) and is_wave(file2)):
-    sys.stderr.write('ERROR Usage: input files must be of MP3 or WAVE format\n'.format(sys.argv[0]))
+    sys.stderr.write('ERROR Usage: input files must be of MP3 or WAVE format\n')
 
-  audio_file1 = normalize.normalize_wave_file(sys.argv[1])
-  audio_file2 = normalize.normalize_wave_file(sys.argv[2])
+  audio_file1 = normalize.normalize_wave_file(file1)
+  audio_file2 = normalize.normalize_wave_file(file2)
 
   ffts1 = normalize.get_fft(audio_file1)
   ffts2 = normalize.get_fft(audio_file2)
@@ -69,6 +68,7 @@ def main():
     print "MATCH"
   else:
     print "NO MATCH"
+
 
 if __name__ == '__main__':
   main()
