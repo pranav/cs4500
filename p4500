@@ -55,6 +55,7 @@ def main():
 
   if not (is_wave(file1) and is_wave(file2)):
     sys.stderr.write('ERROR Usage: input files must be of MP3 or WAVE format\n')
+    sys.exit(1)
 
   audio_file1 = normalize.normalize_wave_file(file1)
   audio_file2 = normalize.normalize_wave_file(file2)
