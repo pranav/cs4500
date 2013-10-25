@@ -32,7 +32,7 @@ def is_wave(path):
     wave.open(path).close()
     return True
   except (IOError, wave.Error):
-    return False  
+    return False
 
 
 # Check if the given file is an MP3 file
