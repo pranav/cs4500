@@ -36,7 +36,8 @@ def normalize_wave_file(audio_file):
 
   # Create a copy of it with new parameters
   wf = wave.open(output_path, 'wb')
-  wf.setparams((NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, "NONE", "NONE"))
+  wf.setparams((NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, 'NONE',
+                'NONE'))
   wf.writeframes(frames)
 
   wf.close()
@@ -82,12 +83,13 @@ def get_fft(audio_file):
 
   # Loop invariant:
   #   0 <= chunk <= total_chunks
-  #   results in an array (fft_out) of FFTs that correspond to the chunks of the
-  #    audio file
+  #   results in an array (fft_out) of FFTs that correspond to the chunks of
+  #    the audio file
 
   chunk = 0
   while chunk < total_chunks:
-    fft = numpy.fft.fft(data[chunk*COMP_CHUNK_SIZE*sample : (chunk+1)*COMP_CHUNK_SIZE*sample])
+    fft = numpy.fft.fft(data[chunk * COMP_CHUNK_SIZE * sample
+                             :(chunk + 1) * COMP_CHUNK_SIZE * sample])
     fft_out[chunk] = fft
     chunk += 1
 

@@ -25,23 +25,45 @@ class TestEuclideanDistance(unittest.TestCase):
     self.complex_ones = numpy.array([1, 1, 1, 1, 1], dtype=numpy.complex128)
 
   def test_zeros(self):
-    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.two_zeros), 0)
-    self.assertEqual(comparator.euclidean_distance(self.five_zeros, self.five_zeros), 0)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros,
+                                                   self.two_zeros),
+                     0)
+    self.assertEqual(comparator.euclidean_distance(self.five_zeros,
+                                                   self.five_zeros),
+                     0)
 
   def test_distance_ones_to_ones(self):
-    self.assertEqual(comparator.euclidean_distance(self.int_ones, self.int_ones), 0)
-    self.assertEqual(comparator.euclidean_distance(self.complex_ones,self.complex_ones), 0)
-    self.assertEqual(comparator.euclidean_distance(self.int_ones, self.complex_ones), 0)
-    self.assertEqual(comparator.euclidean_distance(self.complex_ones, self.int_ones), 0)
+    self.assertEqual(comparator.euclidean_distance(self.int_ones,
+                                                   self.int_ones),
+                     0)
+    self.assertEqual(comparator.euclidean_distance(self.complex_ones,
+                                                   self.complex_ones),
+                     0)
+    self.assertEqual(comparator.euclidean_distance(self.int_ones,
+                                                   self.complex_ones),
+                     0)
+    self.assertEqual(comparator.euclidean_distance(self.complex_ones,
+                                                   self.int_ones),
+                     0)
 
   def test_hypotenuse_is_five(self):
-    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.three_four), 5)
-    self.assertEqual(comparator.euclidean_distance(self.three_four, self.two_zeros), 5)
-    self.assertEqual(comparator.euclidean_distance(self.two_zeros, self.complex_three_four), 5)
-    self.assertEqual(comparator.euclidean_distance(self.complex_three_four, self.two_zeros), 5)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros,
+                                                   self.three_four),
+                     5)
+    self.assertEqual(comparator.euclidean_distance(self.three_four,
+                                                   self.two_zeros),
+                     5)
+    self.assertEqual(comparator.euclidean_distance(self.two_zeros,
+                                                   self.complex_three_four),
+                     5)
+    self.assertEqual(comparator.euclidean_distance(self.complex_three_four,
+                                                   self.two_zeros),
+                     5)
 
   def test_hypotenuse_is_sqrt_five(self):
-    self.assertEqual(comparator.euclidean_distance(self.five_zeros, self.int_ones), math.sqrt(5))
+    self.assertEqual(comparator.euclidean_distance(self.five_zeros,
+                                                   self.int_ones),
+                     math.sqrt(5))
 
 
 class TestFileNormalization(unittest.TestCase):
@@ -68,7 +90,8 @@ class TestFileNormalization(unittest.TestCase):
     noise_output.close()
 
     self.noise_file_norm = normalize.normalize_wave_file(self.noise_file)
-    self.slow_noise_file_norm = normalize.normalize_wave_file(self.slow_noise_file)
+    self.slow_noise_file_norm = normalize.normalize_wave_file(
+      self.slow_noise_file)
 
     nfn = wave.open(self.noise_file_norm)
     nfnparam = nfn.getparams()
