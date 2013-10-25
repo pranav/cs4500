@@ -25,3 +25,7 @@ def get_tmp_path(audio_file):
   filename = re.search(r'[^/]+$', audio_file).group()
   tmp_path = '/tmp/' + filename
   return tmp_path
+
+# Escape a string for use as a single shell token
+def quote(s):
+  return "'" + s.replace("'", "'\\''") + "'"

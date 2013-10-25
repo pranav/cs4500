@@ -56,9 +56,8 @@ def mp3_to_wav(mp3_file):
   output_path = utils.get_tmp_path(mp3_file) + '_wav'
 
   # Run lame to decode the MP3 file to WAVE
-  os.system(
-    '/course/cs4500f13/bin/lame --decode --mp3input "%s" "%s"'%(mp3_file, output_path)
-  )
+  os.system('/course/cs4500f13/bin/lame --decode --mp3input --quiet {0} {1}'
+            .format(utils.quote(mp3_file), utils.quote(output_path)))
   try:
     os.chmod(output_path, 0666)
   except OSError:
