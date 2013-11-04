@@ -7,11 +7,17 @@ import wave
 import scipy.io.wavfile
 
 
-# Reads a WAVE file
-# Returns:
-#  rate : Int (sample rate of WAVE file)
-#  data : numpy array (data read from WAVE file)
 def read_wave_from_file(path):
+  """Reads a WAVE file.
+
+  Args:
+    path: A file path to a WAVE file.
+
+  Returns:
+    A tuple of a rate (an integer) and data (a NumPy array). The rate is
+    the sample rate of WAVE file in hertz. The data is the sound data
+    read from the WAVE file.
+  """
   with open(os.devnull, 'w') as sys.stdout: # work-around for SciPy bug
     (rate, data) = scipy.io.wavfile.read(path)
   sys.stdout = sys.__stdout__
@@ -30,16 +36,40 @@ def is_mp3(path):
   return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
                                                             path])
 
-# Write a WAVE file
 def write_wave_to_file(path, rate, data):
+  """Writes a WAVE file.
+
+  Args:
+    path: The output file path.
+    rate: The sample rate in hertz.
+    data: A 1-D or 2-D NumPy array of either integer or float data-type.
+  """
   scipy.io.wavfile.write(path, rate, data)
 
-# Get a path for the given file within /tmp/
+
 def get_tmp_path(audio_file):
+  """Gets a temporary file path.
+
+  Derives the temporary file name from the given file path.
+
+  Args:
+    audio_file: A file path.
+
+  Returns:
+    A path for the given file within /tmp.
+  """
   filename = re.search(r'[^/]+$', audio_file).group()
   tmp_path = '/tmp/' + filename
   return tmp_path
 
-# Escape a string for use as a single shell token
+
 def quote(s):
+  """Escapes a string for use as a single shell token.
+
+  Args:
+    s: A string.
+
+  Returns:
+    The escaped string.
+  """
   return "'" + s.replace("'", "'\\''") + "'"
