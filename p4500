@@ -1,15 +1,7 @@
 #!/usr/bin/python -B
 
-import audioop
 import os
-import subprocess
-import re
-import wave
 import sys
-
-import numpy
-import numpy.fft
-import scipy.io.wavfile
 
 # Local modules
 import config
@@ -24,24 +16,10 @@ def check_args():
            sys.argv[3] == '-f' and
            os.path.isfile(sys.argv[2]) and
            os.path.isfile(sys.argv[4]))):
-    sys.stderr.write('ERROR Usage: {0} -f <path> -f <path>\n'.format(sys.argv[0]))
+    sys.stderr.write('ERROR Usage: {0} -f <path> -f <path>\n'
+                     .format(sys.argv[0]))
     return False
   return True
-
-
-# Check if the given file is a WAVE file
-def is_wave(path):
-  try:
-    wave.open(path).close()
-    return True
-  except (IOError, wave.Error):
-    return False
-
-
-# Check if the given file is an MP3 file
-def is_mp3(path):
-  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
-                                                            path])
 
 
 def main():
@@ -52,12 +30,12 @@ def main():
   file1 = sys.argv[2]
   file2 = sys.argv[4]
   # Returns a file path, "/tmp/newfile.wav"
-  if is_mp3(file1):
+  if utils.is_mp3(file1):
     file1 = normalize.mp3_to_wav(file1)
-  if is_mp3(file2):
+  if utils.is_mp3(file2):
     file2 = normalize.mp3_to_wav(file2)
 
-  if not (is_wave(file1) and is_wave(file2)):
+  if not (utils.is_wave(file1) and utils.is_wave(file2)):
     sys.stderr.write(
       'ERROR Usage: input files must be of MP3 or WAVE format\n')
     sys.exit(1)
