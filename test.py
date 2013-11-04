@@ -36,7 +36,7 @@ class TestFileDetection(unittest.TestCase):
     wav_output.close()
 
     # Write noise to WAVE file with different extension
-    self.hidden_wav_file = '/tmp/hidden_noise.txt'
+    self.hidden_wav_file = '/tmp/hidden_wav_noise.txt'
     hidden_wav_output = wave.open(self.hidden_wav_file, 'w')
     hidden_wav_output.setparams((2, 2, 44100, 0, 'NONE', 'NONE'))
     hidden_wav_output.writeframes(value_str)
@@ -48,7 +48,7 @@ class TestFileDetection(unittest.TestCase):
               .format(self.wav_file, self.mp3_file))
 
     # Write noise to MP3 file with different extension (use lame)
-    self.hidden_mp3_file = '/tmp/hidden_noise.txt'
+    self.hidden_mp3_file = '/tmp/hidden_mp3_noise.txt'
     os.system('/course/cs4500f13/bin/lame --quiet {0} {1}'
               .format(self.wav_file, self.hidden_mp3_file))
 
