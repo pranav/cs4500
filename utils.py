@@ -73,3 +73,32 @@ def quote(s):
     The escaped string.
   """
   return "'" + s.replace("'", "'\\''") + "'"
+
+
+def is_wave(path):
+  """Checks whether a file is in WAVE format.
+
+  Args:
+    path: A string.
+
+  Returns:
+    True if it the file is a WAVE; otherwise False.
+  """
+  try:
+    wave.open(path).close()
+    return True
+  except (IOError, wave.Error):
+    return False
+
+
+def is_mp3(path):
+  """Checks whether a file is in MP3 format.
+
+  Args:
+    path: A string.
+
+  Returns:
+    True if it the file is an MP3; otherwise False.
+  """
+  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
+                                                            path])

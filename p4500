@@ -28,59 +28,19 @@ def check_args():
     return False
   return True
 
-
-<<<<<<< HEAD
-=======
-def is_wave(path):
-  """Checks whether a file is in WAVE format.
-
-  Args:
-    path: A string.
-
-  Returns:
-    True if it the file is a WAVE; otherwise False.
-  """
-  try:
-    wave.open(path).close()
-    return True
-  except (IOError, wave.Error):
-    return False
-
-
-def is_mp3(path):
-  """Checks whether a file is in MP3 format.
-
-  Args:
-    path: A string.
-
-  Returns:
-    True if it the file is an MP3; otherwise False.
-  """
-  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
-                                                            path])
-
-
->>>>>>> 4f06c65a31a8e7fa56521dc58441b11ffb0b1a23
 def main():
   if not check_args():
     sys.exit(1)
   file1 = sys.argv[2]
   file2 = sys.argv[4]
-<<<<<<< HEAD
+
   # Returns a file path, "/tmp/newfile.wav"
   if utils.is_mp3(file1):
-=======
-  if is_mp3(file1):
->>>>>>> 4f06c65a31a8e7fa56521dc58441b11ffb0b1a23
     file1 = normalize.mp3_to_wav(file1)
   if utils.is_mp3(file2):
     file2 = normalize.mp3_to_wav(file2)
-<<<<<<< HEAD
 
   if not (utils.is_wave(file1) and utils.is_wave(file2)):
-=======
-  if not (is_wave(file1) and is_wave(file2)):
->>>>>>> 4f06c65a31a8e7fa56521dc58441b11ffb0b1a23
     sys.stderr.write(
       'ERROR Usage: input files must be of MP3 or WAVE format\n')
     sys.exit(1)
