@@ -46,9 +46,14 @@ def main():
     sys.exit(1)
   audio_file1 = normalize.normalize_wave_file(file1)
   audio_file2 = normalize.normalize_wave_file(file2)
-  ffts1 = normalize.get_ffts(audio_file1)
-  ffts2 = normalize.get_ffts(audio_file2)
-  match = comparator.compare(ffts1, ffts2)
+  # ffts1 = normalize.get_ffts(audio_file1)
+  # ffts2 = normalize.get_ffts(audio_file2)
+
+  (fft1, ceps1) = normalize.get_mfcc(audio_file1)
+  (fft2, ceps2) = normalize.get_mfcc(audio_file2)
+
+  match = comparator.compare(ceps1, ceps2) or \
+      comparator.compare(fft1, fft2)
   if match:
     print "MATCH"
   else:

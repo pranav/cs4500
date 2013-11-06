@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 
 import math
 import os
@@ -198,13 +198,13 @@ class TestGetFFT(unittest.TestCase):
     two_s_z_out.close()
 
     # Get the FFTs of each file
-    self.one_s_z_fft = normalize.get_fft(self.short_zeros)
-    self.two_s_z_fft = normalize.get_fft(self.long_zeros)
+    self.one_s_z_fft = normalize.get_ffts(self.short_zeros)
+    self.two_s_z_fft = normalize.get_ffts(self.long_zeros)
 
   # FFT output should have be of dimensions
   # [seconds / chunk_size, 44100 * chuck_size]
   def test_output_dimensions(self):
-    self.assertEqual(self.one_s_z_fft.shape, 
+    self.assertEqual(self.one_s_z_fft.shape,
                      (1 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
     self.assertEqual(self.two_s_z_fft.shape,
                      (2 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
@@ -239,7 +239,7 @@ class TestEuclideanDistance(unittest.TestCase):
                                                    self.five_zeros),
                      0)
 
-  # The distance between any two vectors at the same point in space 
+  # The distance between any two vectors at the same point in space
   # should be 0
   def test_distance_ones_to_ones(self):
     self.assertEqual(comparator.euclidean_distance(self.int_ones,
@@ -297,7 +297,7 @@ class TestMeanSquaredError(unittest.TestCase):
                                                    self.five_zeros),
                      0)
 
-  # The distance between any two vectors at the same point in space 
+  # The distance between any two vectors at the same point in space
   # should be 0
   def test_distance_ones_to_ones(self):
     self.assertEqual(comparator.euclidean_distance(self.int_ones,
@@ -313,7 +313,7 @@ class TestMeanSquaredError(unittest.TestCase):
                                                    self.int_ones),
                      0)
 
-  # The mean squared error between (0, 0, 0, 0, 0) and (1, 1, 1, 1, 1) 
+  # The mean squared error between (0, 0, 0, 0, 0) and (1, 1, 1, 1, 1)
   # should be 1
   def test_error_should_be_one(self):
     self.assertEqual(comparator.distance(self.five_zeros, self.int_ones), 1)
@@ -323,9 +323,9 @@ class TestMeanSquaredError(unittest.TestCase):
 
   # The mean squared error between (0, 0) and (3, 4) should be 12.5
   def test_error_should_be_25_over_2(self):
-    self.assertEqual(comparator.distance(self.two_zeros, self.three_four), 
+    self.assertEqual(comparator.distance(self.two_zeros, self.three_four),
                      12.5)
-    self.assertEqual(comparator.distance(self.three_four, self.two_zeros), 
+    self.assertEqual(comparator.distance(self.three_four, self.two_zeros),
                      12.5)
 
 # Test matches between arrays
@@ -346,7 +346,7 @@ class TestMatching(unittest.TestCase):
   def test_exact_partial_match(self):
     self.assertTrue(comparator.compare(self.fft1, self.fft2))
 
-  # Arrays containing different 
+  # Arrays containing different
   def test_fuzzy_match(self):
     self.assertTrue(comparator.compare(self.fft1, self.fft3))
     self.assertTrue(comparator.compare(self.fft3, self.fft1))
