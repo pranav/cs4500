@@ -70,50 +70,50 @@ def mp3_to_wav(mp3_file):
     pass
   return output_path
 
-def triangular_filters(sample_rate, nfft):
-    """ Compute the Mel triangular filterbank to the power spectrum
+def triangular_filters(sample, nfft):
+  """ Compute the Mel triangular filters for the frame.
 
-    Args:
-      sample_rate
+  Args:
+    sample: the sample rate of the frame
+    nfft: the size of the fft
 
-    """
-    lowfreq = 133.3333
-    linsc = 200/3.
-    logsc = 1.0711703
+  Returns:
+    The Mel filterbank
+  """
+  lowfreq = 133.3333
+  linsc = 200/3.
+  logsc = 1.0711703
 
-    nlinfilt = 13
-    nlogfilt = 27
-    nfilt = nlinfilt + nlogfilt
+  nlinfilt = 13
+  nlogfilt = 27
+  nfilt = nlinfilt + nlogfilt
 
-    #------------------------
-    # Compute the filter bank
-    #------------------------
-    # Compute start/middle/end points of the triangular filters in spectral
-    # domain
-    freqs = numpy.zeros(nfilt+2)
-    freqs[:nlinfilt] = lowfreq + numpy.arange(nlinfilt) * linsc
-    freqs[nlinfilt:] = freqs[nlinfilt-1] * logsc ** numpy.arange(1, nlogfilt + 3)
-    heights = 2./(freqs[2:] - freqs[0:-2])
+  # Begin computing the coefficients
+  freqs = numpy.zeros(nfilt+2)
+  freqs[:nlinfilt] = lowfreq + numpy.arange(nlinfilt) * linsc
+  freqs[nlinfilt:] = \
+          freqs[nlinfilt-1] * logsc ** numpy.arange(1, nlogfilt + 3)
+  heights = 2./(freqs[2:] - freqs[0:-2])
 
-    # Compute filterbank coeff (in fft domain, in bins)
-    fbank = numpy.zeros((nfilt, nfft))
-    # FFT bins (in Hz)
-    nfreqs = numpy.arange(nfft) / (1. * nfft) * sample_rate
-    for i in range(nfilt):
-        low = freqs[i]
-        cen = freqs[i+1]
-        hi = freqs[i+2]
+  # Generate the filterbank coefficients
+  fbank = numpy.zeros((nfilt, nfft))
+  nfreqs = numpy.arange(nfft) / (1. * nfft) * sample
 
-        lid = numpy.arange(numpy.floor(low * nfft / sample_rate) + 1,
-                numpy.floor(cen * nfft / sample_rate) + 1, dtype=numpy.int)
-        lslope = heights[i] / (cen - low)
-        rid = numpy.arange(numpy.floor(cen * nfft / sample_rate) + 1,
-                numpy.floor(hi * nfft / sample_rate) + 1, dtype=numpy.int)
-        rslope = heights[i] / (hi - cen)
-        fbank[i][lid] = lslope * (nfreqs[lid] - low)
-        fbank[i][rid] = rslope * (hi - nfreqs[rid])
+  for i in range(nfilt):
+      low = freqs[i]
+      cen = freqs[i+1]
+      hi = freqs[i+2]
 
-    return fbank, freqs
+      lid = numpy.arange(numpy.floor(low * nfft / sample) + 1,
+              numpy.floor(cen * nfft / sample) + 1, dtype=numpy.int)
+      lslope = heights[i] / (cen - low)
+      rid = numpy.arange(numpy.floor(cen * nfft / sample) + 1,
+              numpy.floor(hi * nfft / sample) + 1, dtype=numpy.int)
+      rslope = heights[i] / (hi - cen)
+      fbank[i][lid] = lslope * (nfreqs[lid] - low)
+      fbank[i][rid] = rslope * (hi - nfreqs[rid])
+
+  return fbank
 
 def get_mfcc(audio_file):
   """Finds the MFCCs of the audio file.
@@ -122,8 +122,7 @@ def get_mfcc(audio_file):
     audio_file: A WAVE file.
 
   Returns:
-    A 2-tuple containing an interable of the FFTs and an iterable
-    of the Mel Frequency Cepstrum Coefficients of the WAVE file.
+    An interable of the MFCCs of the chunks of the WAVE file.
   """
   global COMP_CHUNK_SIZE
   # Read the file, and determine its length in 'chunks'
@@ -131,8 +130,8 @@ def get_mfcc(audio_file):
   total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
 
   STEP = COMP_CHUNK_SIZE * sample
-  window = hamming(STEP)
   prefactor = 0.97
+  window = hamming(STEP)
 
   # Allocate space for the FFT decompsitions of each chunk of sound data
   fft_out = list()
@@ -155,14 +154,14 @@ def get_mfcc(audio_file):
     nfft = len(frame_fft)
 
     # Compute the Mel triangular filterbank
-    filterbank = triangular_filters(sample, nfft)[0]
+    filterbank = triangular_filters(sample, nfft)
 
-    # Get the power spectrum
+    # The power spectrum of the frame
     power_spectrum = numpy.abs(frame_fft)
-    # Use the filterbank to get the Mel power spectrum
-    mel_power_spectrum = numpy.log10(numpy.dot(spec, filterbank.T))
-    # Perform the discrete cosine transform to get the cepstrum
-    cepstrum = dct(mspec, type=2, norm='ortho', axis=-1)
+    # Filtered by the Mel filterbank
+    mel_power_spectrum = numpy.log10(numpy.dot(power_spectrum, filterbank.T))
+    # With the Discrete Cosine Transform to find the cepstrum
+    cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
 
     fft_out.append( frame_fft )
     mel_out.append( cepstrum )
