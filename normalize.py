@@ -99,6 +99,7 @@ def triangular_filters(sample, nfft):
   fbank = numpy.zeros((nfilt, nfft))
   nfreqs = numpy.arange(nfft) / (1. * nfft) * sample
 
+  # Calculate the filters
   for i in range(nfilt):
       low = freqs[i]
       cen = freqs[i+1]
@@ -141,9 +142,9 @@ def get_mfcc(audio_file):
   #   0 <= chunk <= total_chunks
   #   results in an array (fft_out) of FFTs that correspond to the chunks of
   #    the audio file
+  filterbank_cache = {}
   chunk = 0
   while chunk < total_chunks:
-
     # Obtain the chunkth frame from the data
     frame = data[chunk * STEP:(chunk + 1) * STEP]
     frame = pre_emphasis( frame, prefactor )
@@ -153,8 +154,13 @@ def get_mfcc(audio_file):
 
     nfft = len(frame_fft)
 
-    # Compute the Mel triangular filterbank
-    filterbank = triangular_filters(sample, nfft)
+    # Compute the Mel triangular filterbank or get a cached version
+    fb_key = (sample, nfft)
+    if fb_key in filterbank_cache:
+        filterbank = filterbank_cache[fb_key]
+    else:
+        filterbank = triangular_filters(sample, nfft)
+        filterbank_cache[fb_key] = filterbank
 
     # The power spectrum of the frame
     power_spectrum = numpy.abs(frame_fft)
@@ -190,7 +196,6 @@ def get_ffts(audio_file):
   (sample, data) = utils.read_wave_from_file(audio_file)
   total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
   # Allocate space for the FFT decompsitions of each chunk of sound data
-  # fft_out = list()
   fft_out = numpy.ndarray(shape=(total_chunks, sample*COMP_CHUNK_SIZE),
           dtype=numpy.complex128)
 
