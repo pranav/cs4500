@@ -23,19 +23,6 @@ def read_wave_from_file(path):
   sys.stdout = sys.__stdout__
   return (rate, data)
 
-# Check if the given file is a WAVE file
-def is_wave(path):
-  try:
-    wave.open(path).close()
-    return True
-  except (IOError, wave.Error):
-    return False
-
-# Check if the given file is an MP3 file
-def is_mp3(path):
-  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
-                                                            path])
-
 def write_wave_to_file(path, rate, data):
   """Writes a WAVE file.
 
@@ -100,5 +87,6 @@ def is_mp3(path):
   Returns:
     True if it the file is an MP3; otherwise False.
   """
-  return 'MPEG ADTS, layer III' in subprocess.check_output(['file', '-b',
-                                                            path])
+  fileb = subprocess.check_output(['file', '-b', path])
+
+  return ("MPEG ADTS, layer III" in fileb) or ("ID3" in fileb)
