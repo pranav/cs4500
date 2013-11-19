@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 
 import math
 import os
@@ -17,7 +17,7 @@ import utils
 
 class TestFileDetection(unittest.TestCase):
   """Test that WAVE, MP3, and other files are properly detected"""
-  
+
   def setUp(self):
     """Generate files to call methods on"""
     # Generate noise to store in sound files
@@ -164,7 +164,7 @@ class TestFileNormalization(unittest.TestCase):
     self.assertEqual(self.slow_noise_norm_channels, NUM_CHANNELS)
 
   def test_output_file_hz_is_44100(self):
-    """Test to make sure generated files 
+    """Test to make sure generated files
     have a sampling frequency of 44100 Hz"""
     self.assertEqual(self.noise_norm_hz, FREQUENCY)
     self.assertEqual(self.slow_noise_norm_hz, FREQUENCY)
@@ -206,9 +206,9 @@ class TestGetFFT(unittest.TestCase):
     self.two_s_z_fft = normalize.get_ffts(self.long_zeros)
 
   def test_output_dimensions(self):
-    """FFT output should have be of dimensions 
+    """FFT output should have be of dimensions
     [seconds / chunk_size, 44100 * chunk_size]"""
-    self.assertEqual(self.one_s_z_fft.shape, 
+    self.assertEqual(self.one_s_z_fft.shape,
                      (1 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
     self.assertEqual(self.two_s_z_fft.shape,
                      (2 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
@@ -246,7 +246,7 @@ class TestEuclideanDistance(unittest.TestCase):
                      0)
 
   def test_distance_ones_to_ones(self):
-    """The distance between any two vectors at 
+    """The distance between any two vectors at
     the same point in space should be 0"""
     self.assertEqual(comparator.euclidean_distance(self.int_ones,
                                                    self.int_ones),
@@ -277,7 +277,7 @@ class TestEuclideanDistance(unittest.TestCase):
                      5)
 
   def test_hypotenuse_is_sqrt_five(self):
-    """The distance between (0, 0, 0, 0, 0) 
+    """The distance between (0, 0, 0, 0, 0)
     and (1, 1, 1, 1, 1) should be sqrt(5)"""
     self.assertEqual(comparator.euclidean_distance(self.five_zeros,
                                                    self.int_ones),
@@ -306,7 +306,7 @@ class TestMeanSquaredError(unittest.TestCase):
                      0)
 
   def test_distance_ones_to_ones(self):
-    """The distance between any two vectors at 
+    """The distance between any two vectors at
     the same point in space should be 0"""
     self.assertEqual(comparator.euclidean_distance(self.int_ones,
                                                    self.int_ones),
@@ -322,7 +322,7 @@ class TestMeanSquaredError(unittest.TestCase):
                      0)
 
   def test_error_should_be_one(self):
-    """The mean squared error between (0, 0, 0, 0, 0) 
+    """The mean squared error between (0, 0, 0, 0, 0)
     and (1, 1, 1, 1, 1) should be 1"""
     self.assertEqual(comparator.distance(self.five_zeros, self.int_ones), 1)
     self.assertEqual(comparator.distance(self.int_ones, self.five_zeros), 1)
@@ -331,9 +331,9 @@ class TestMeanSquaredError(unittest.TestCase):
 
   def test_error_should_be_25_over_2(self):
     """The mean squared error between (0, 0) and (3, 4) should be 12.5"""
-    self.assertEqual(comparator.distance(self.two_zeros, self.three_four), 
+    self.assertEqual(comparator.distance(self.two_zeros, self.three_four),
                      12.5)
-    self.assertEqual(comparator.distance(self.three_four, self.two_zeros), 
+    self.assertEqual(comparator.distance(self.three_four, self.two_zeros),
                      12.5)
 
 
@@ -352,12 +352,12 @@ class TestMatching(unittest.TestCase):
     self.assertTrue(comparator.compare(self.fft1, self.fft1))
 
   def test_exact_partial_match(self):
-    """An array compared against a different array that contains 
+    """An array compared against a different array that contains
     all of its elements in order should match"""
     self.assertTrue(comparator.compare(self.fft1, self.fft2))
 
   def test_fuzzy_match(self):
-    """Arrays containing different elements, where one is not a slice of the 
+    """Arrays containing different elements, where one is not a slice of the
     other, should match if their elements are numerically close together"""
     self.assertTrue(comparator.compare(self.fft1, self.fft3))
     self.assertTrue(comparator.compare(self.fft3, self.fft1))
