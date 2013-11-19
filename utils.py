@@ -5,6 +5,7 @@ import subprocess
 import wave
 
 import scipy.io.wavfile
+from mutagen import MP3
 
 
 def read_wave_from_file(path):
@@ -81,6 +82,10 @@ def is_wave(path):
 def is_mp3(path):
   """Checks whether a file is in MP3 format.
 
+  Will first use unix `file` program to check for obvious header.
+  If not definite match, use Python library mutagen.MP3 to get the
+  file's MIME type.
+
   Args:
     path: A string.
 
@@ -89,4 +94,10 @@ def is_mp3(path):
   """
   fileb = subprocess.check_output(['file', '-b', path])
 
-  return ("MPEG ADTS, layer III" in fileb) or ("ID3" in fileb)
+  if "MPEG ADTS, layer III" in fileb:
+      return true;
+  elif "ID3" in fileb:
+      audio = MP3(path)
+      return "audio/mp3" in audio.mime
+  else:
+      return False
