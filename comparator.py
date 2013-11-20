@@ -2,51 +2,53 @@ import numpy
 
 from config import *
 
-def compare(ffts1, ffts2):
-  """Compares the FFT decompositions of two files.
+
+def compare(arrs1, arrs2, match_threshold):
+  """Finds a fuzzy match of one iterable of NumPy arrays within another.
+
+  The order of arrs1 and arrs2 doesn't matter.
 
   Args:
-    ffts1: An iterable of FFT decompositions as NumPy arrays.
-    ffts2: Another iterable of FFT decompositions as NumPy arrays.
+    arrs1: An iterable of NumPy arrays.
+    arrs2: Another iterable of NumPy arrays.
+    match_threshold: The maximum distance between two matching arrays.
 
   Returns:
-    True if the entirety of the shorter file can be located in
-    sequential order within the longer file; otherwise False.
+    True if the entirety of the shorter iterable can be located in
+    sequential order within the longer iterable; otherwise False.
   """
-  # Determine which FFT data is longer
-  shorter = ffts1
-  longer = ffts2
-  if len(ffts1) > len(ffts2):
-    shorter = ffts2
-    longer = ffts1
-  # Set the threshold for a match
-  match_threshold = (max(numpy.amax(ffts1[0]), numpy.amax(ffts2[0])) *
-                     NORMALIZED_MATCH_THRESHOLD)
-  i = 0 # Current chunk of FFT data in smaller file
-  j = 0 # Current chunk of FFT data in longer file
-  j_prev = 0 # Chunk of FFT data in longer file where sequential matching began
+  shorter = arrs1
+  longer = arrs2
+  if len(arrs1) > len(arrs2):
+    shorter = arrs2
+    longer = arrs1
+  match_threshold = match_threshold * max(numpy.amax(arrs1[0]),
+                                          numpy.amax(arrs2[0]))
+  i = 0 # Current index in shorter iterable
+  j = 0 # Current index in longer iterable
+  j_prev = 0 # Index in longer file where sequential matching began
   # Loop invariant
   #  0 <= i <= len(shorter)
   #  0 <= j <= len(longer)
   #  0 <= j_prev <= j
-  #  compares FFTs of each of the two FFTs by finding FFTs that sit within the
-  #   match_threshold
+  #  Compares arrays from each of the two iterables by comparing their
+  #   distance to match_threshold
   while i < len(shorter):
-    # Bottom of longer file reached, no match found
+    # End of longer iterable reached: no match found
     if j == len(longer) or len(shorter) - i > len(longer) - j:
       return False
-    # Current examined chunks match
+    # Current examined arrays match
     if distance(shorter[i], longer[j]) < match_threshold:
       if i == 0:
         j_prev = j
       i += 1
       j += 1
-    # Current examined chunks do not match
+    # Current examined arrays do not match
     else:
       i = 0
       j = j_prev + 1
       j_prev = j
-  # If here, bottom of smaller file reached, match found
+  # End of shorter iterable reached: match found
   return True
 
 
@@ -63,7 +65,7 @@ def euclidean_distance(arr1, arr2):
   return numpy.linalg.norm(arr1 - arr2)
 
 
-def distance(a, b):
+def distance(arr1, arr2):
   """Computes the mean squared error between two NumPy arrays.
 
   Args:
@@ -73,4 +75,4 @@ def distance(a, b):
   Returns:
     The distance between the two arrays.
   """
-  return ((a - b) ** 2).mean()
+  return ((arr1 - arr2) ** 2).mean()

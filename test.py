@@ -196,9 +196,9 @@ class TestGetFFT(unittest.TestCase):
     """FFT output should have be of dimensions
     [seconds / chunk_size, 44100 * chunk_size]"""
     self.assertEqual(self.one_s_z_fft.shape,
-                     (1 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
+                     (1 / COMP_FRAME_SIZE, 44100 * COMP_FRAME_SIZE))
     self.assertEqual(self.two_s_z_fft.shape,
-                     (2 / COMP_CHUNK_SIZE, 44100 * COMP_CHUNK_SIZE))
+                     (2 / COMP_FRAME_SIZE, 44100 * COMP_FRAME_SIZE))
 
   def test_zero_output(self):
     """FFTs of no sound should return arrays of zero"""
@@ -336,23 +336,28 @@ class TestMatching(unittest.TestCase):
 
   def test_exact_match(self):
     """An array compared against itself should match"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft1))
+    self.assertTrue(comparator.compare(self.fft1, self.fft1,
+                                       FFT_MATCH_THRESHOLD))
 
   def test_exact_partial_match(self):
     """An array compared against a different array that contains
     all of its elements in order should match"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft2))
+    self.assertTrue(comparator.compare(self.fft1, self.fft2,
+                                       FFT_MATCH_THRESHOLD))
 
   def test_fuzzy_match(self):
     """Arrays containing different elements, where one is not a slice of the
     other, should match if their elements are numerically close together"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft3))
-    self.assertTrue(comparator.compare(self.fft3, self.fft1))
+    self.assertTrue(comparator.compare(self.fft1, self.fft3,
+                                       FFT_MATCH_THRESHOLD))
+    self.assertTrue(comparator.compare(self.fft3, self.fft1,
+                                       FFT_MATCH_THRESHOLD))
 
   def test_not_a_match(self):
     """Arrays containing different elements, where one is not a slice of the
     other, should not match if their elements are numerically far apart"""
-    self.assertFalse(comparator.compare(self.fft1, self.fft4))
+    self.assertFalse(comparator.compare(self.fft1, self.fft4,
+                                        FFT_MATCH_THRESHOLD))
 
 
 class TestQuote(unittest.TestCase):

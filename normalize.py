@@ -59,14 +59,14 @@ def mp3_to_wav(path):
 
 
 def triangular_filters(sample, nfft):
-  """ Compute the Mel triangular filters for the frame.
+  """Compute the mel triangular filters for the frame.
 
   Args:
     sample: the sample rate of the frame
-    nfft: the size of the fft
+    nfft: the size of the FFT
 
   Returns:
-    The Mel filterbank
+    The mel filterbank.
   """
   lowfreq = 133.3333
   linsc = 200/3.
@@ -104,45 +104,47 @@ def triangular_filters(sample, nfft):
 
   return fbank
 
-def get_mfcc(audio_file):
-  """Finds the MFCCs of the audio file.
+
+def get_mfcc(path):
+  """Finds the MFCCs and FFTs of a WAVE file.
 
   Args:
-    audio_file: A WAVE file.
+    path: The path to a WAVE file.
 
   Returns:
-    An interable of the MFCCs of the chunks of the WAVE file.
+    A tuple of two iterables, the FFTs and MFCCs of the frames of the
+    WAVE file.
   """
-  global COMP_CHUNK_SIZE
-  # Read the file, and determine its length in 'chunks'
-  (sample, data) = utils.read_wave_from_file(audio_file)
-  total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
+  global COMP_FRAME_SIZE
+  # Read the file, and determine its length in frames
+  (sample, data) = utils.read_wave_from_file(path)
+  total_frames = (data.size / sample) / COMP_FRAME_SIZE
 
-  STEP = COMP_CHUNK_SIZE * sample
+  step = COMP_FRAME_SIZE * sample
   prefactor = 0.97
-  window = hamming(STEP)
+  window = hamming(step)
 
-  # Allocate space for the FFT decompsitions of each chunk of sound data
-  fft_out = list()
-  mel_out = list()
+  # Allocate space for the FFT decompositions of each frame of sound data
+  fft_out = []
+  mfcc_out = []
 
   # Loop invariant:
-  #   0 <= chunk <= total_chunks
-  #   results in an array (fft_out) of FFTs that correspond to the chunks of
-  #    the audio file
+  #   0 <= frame_index <= total_frames
+  #   results in an array (fft_out) of FFTs that correspond to the
+  #    frames of the WAVE file
   filterbank_cache = {}
-  chunk = 0
-  while chunk < total_chunks:
-    # Obtain the chunkth frame from the data
-    frame = data[chunk * STEP:(chunk + 1) * STEP]
-    frame = pre_emphasis( frame, prefactor )
+  frame_index = 0
+  while frame_index < total_frames:
+    # Obtain the frame_indexth frame from the data
+    frame = data[frame_index * step:(frame_index + 1) * step]
+    frame = pre_emphasis(frame, prefactor)
 
     # Generate the FFT of the frame windowed by the hamming window
     frame_fft = numpy.fft.fft(frame * window)
 
     nfft = len(frame_fft)
 
-    # Compute the Mel triangular filterbank or get a cached version
+    # Compute the mel triangular filterbank or get a cached version
     fb_key = (sample, nfft)
     if fb_key in filterbank_cache:
         filterbank = filterbank_cache[fb_key]
@@ -152,50 +154,46 @@ def get_mfcc(audio_file):
 
     # The power spectrum of the frame
     power_spectrum = numpy.abs(frame_fft)
-    # Filtered by the Mel filterbank
+    # Filtered by the mel filterbank
     mel_power_spectrum = numpy.log10(numpy.dot(power_spectrum, filterbank.T))
     # With the Discrete Cosine Transform to find the cepstrum
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
+    fft_out.append(frame_fft)
+    mfcc_out.append(cepstrum)
+    frame_index = frame_index + 1
+  return (fft_out, mfcc_out)
 
-    fft_out.append( frame_fft )
-    mel_out.append( cepstrum )
-
-    chunk = chunk + 1
-
-  return (fft_out, mel_out)
 
 def pre_emphasis(frame, factor):
     return lfilter([1., -factor], 1, frame)
 
 def get_ffts(audio_file):
-  """Computes the FFT of each chunk of a WAVE file.
+  """Computes the FFT of each frame of a WAVE file.
 
-  Splits the WAVE file into chunks of equal temporal length and performs
+  Splits the WAVE file into frames of equal temporal length and performs
   an FFT on each.
 
   Args:
     audio_file: A WAVE file.
 
   Returns:
-    An iterable of the FFTs of the chunks of the WAVE file.
+    An iterable of the FFTs of the frames of the WAVE file.
   """
-  global COMP_CHUNK_SIZE
-  # Read the file, and determine its length in 'chunks'
+  global COMP_FRAME_SIZE
+  # Read the file, and determine its length in frames
   (sample, data) = utils.read_wave_from_file(audio_file)
-  total_chunks = (data.size / sample) / COMP_CHUNK_SIZE
-  # Allocate space for the FFT decompsitions of each chunk of sound data
-  fft_out = numpy.ndarray(shape=(total_chunks, sample*COMP_CHUNK_SIZE),
-          dtype=numpy.complex128)
-
-
+  total_frames = (data.size / sample) / COMP_FRAME_SIZE
+  # Allocate space for the FFT decompsitions of each frame of sound data
+  fft_out = numpy.ndarray(shape=(total_frames, sample*COMP_FRAME_SIZE),
+                          dtype=numpy.complex128)
   # Loop invariant:
-  #   0 <= chunk <= total_chunks
-  #   results in an array (fft_out) of FFTs that correspond to the chunks of
-  #    the audio file
-  chunk = 0
-  while chunk < total_chunks:
-    fft = numpy.fft.fft(data[chunk * COMP_CHUNK_SIZE * sample
-                             :(chunk + 1) * COMP_CHUNK_SIZE * sample])
-    fft_out[chunk] = fft
-    chunk = chunk + 1
+  # 0 <= frame_index <= total_frames
+  # results in an array (fft_out) of FFTs that correspond to the frames of
+  #  the audio file
+  frame_index = 0
+  while frame_index < total_frames:
+    fft = numpy.fft.fft(data[frame_index * COMP_FRAME_SIZE * sample
+                             :(frame_index + 1) * COMP_FRAME_SIZE * sample])
+    fft_out[frame_index] = fft
+    frame_index = frame_index + 1
   return fft_out
