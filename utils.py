@@ -5,7 +5,7 @@ import subprocess
 import wave
 
 import scipy.io.wavfile
-from mutagen import MP3
+from mutagen import mp3
 
 
 def read_wave_from_file(path):
@@ -72,12 +72,16 @@ def is_wave(path):
   Returns:
     True if it the file is a WAVE; otherwise False.
   """
-  try:
-    wave.open(path).close()
-    return True
-  except (IOError, wave.Error):
-    return False
+  fileb = subprocess.check_output(['file', '-b', path])
 
+  if "WAVE audio" in fileb:
+      return True;
+  else:
+      try:
+          wave.open(path).close()
+          return True
+      except (IOError, wave.Error):
+          return False
 
 def is_mp3(path):
   """Checks whether a file is in MP3 format.
@@ -95,7 +99,7 @@ def is_mp3(path):
   fileb = subprocess.check_output(['file', '-b', path])
 
   if "MPEG ADTS, layer III" in fileb:
-      return true;
+      return True;
   elif "ID3" in fileb:
       audio = MP3(path)
       return "audio/mp3" in audio.mime
