@@ -15,60 +15,48 @@ from config import *
 
 
 # TODO: Normalize tempo to 100 bpm
-def normalize_wave_file(audio_file):
+def normalize_wave_file(path):
   """Normalizes a WAVE file to single channel WAVE.
 
   Args:
-    audio_file: A WAVE file name.
+    path: The path to a WAVE file.
 
   Returns:
-    The path to the normalized WAVE file.
+    The normalized WAVE file.
   """
   global FREQUENCY, NUM_CHANNELS, SAMPLE_WIDTH
-  # Get path in /tmp to write to
-  output_path = utils.get_tmp_path(audio_file) + '_norm'
-  # Read the file
-  wf = wave.open(audio_file, 'rb')
-  # Get the WAVE file parameters and read data
+  # Read WAVE data
+  wf = wave.open(path, 'rb')
   (nchannels, sampwidth, framerate, nframes, comptype, compname) = \
     wf.getparams()
   frames = wf.readframes(nframes)
   wf.close()
-  # Convert to mono if file is stereo
-  if nchannels == 2:
-    frames = audioop.tomono(frames, sampwidth, 1, 1)
-  # Create a copy of it with new parameters
-  wf = wave.open(output_path, 'wb')
+  # Create a temporary copy of it with new parameters
+  tmp_file = utils.get_tmp_file(path)
+  wf = wave.open(tmp_file.name, 'wb')
   wf.setparams((NUM_CHANNELS, SAMPLE_WIDTH, FREQUENCY, nframes, 'NONE',
                 'NONE'))
+  if nchannels != 1:
+    frames = audioop.tomono(frames, sampwidth, 1, 1)
   wf.writeframes(frames)
   wf.close()
-  try:
-    os.chmod(output_path, 0666)
-  except OSError:
-    pass
-  return output_path
+  return tmp_file
 
 
-def mp3_to_wav(mp3_file):
+def mp3_to_wav(path):
   """Converts an MP3 file to a WAVE file.
 
   Args:
-    mp3_file: An MP3 file name.
+    path: The path to an MP3 file.
 
   Returns:
-    The path to the generated WAVE file.
+    The generated WAVE file.
   """
-  # Get path in /tmp/ to write to
-  output_path = utils.get_tmp_path(mp3_file) + '_wav'
-  # Run lame to decode the MP3 file to WAVE
+  tmp_file = utils.get_tmp_file(path)
   os.system('/course/cs4500f13/bin/lame --decode --mp3input --quiet {0} {1}'
-            .format(utils.quote(mp3_file), utils.quote(output_path)))
-  try:
-    os.chmod(output_path, 0666)
-  except OSError:
-    pass
-  return output_path
+            .format(utils.quote(path), utils.quote(tmp_file.name)))
+  return tmp_file
+
 
 def triangular_filters(sample, nfft):
   """ Compute the Mel triangular filters for the frame.

@@ -1,7 +1,7 @@
 import os
 import sys
-import re
 import subprocess
+import tempfile
 import wave
 
 import scipy.io.wavfile
@@ -35,20 +35,24 @@ def write_wave_to_file(path, rate, data):
   scipy.io.wavfile.write(path, rate, data)
 
 
-def get_tmp_path(audio_file):
-  """Gets a temporary file path.
+def get_tmp_file(path):
+  """Gets a new temporary file.
 
   Derives the temporary file name from the given file path.
 
   Args:
-    audio_file: A file path.
+    path: A file path.
 
   Returns:
-    A path for the given file within /tmp.
+    A temporary file within /tmp.
   """
-  filename = re.search(r'[^/]+$', audio_file).group()
-  tmp_path = '/tmp/' + filename
-  return tmp_path
+  tmp_file = tempfile.NamedTemporaryFile(suffix=os.path.basename(path),
+                                         dir='/tmp')
+  try:
+    os.chmod(tmp_file.name, 0o660)
+  except OSError:
+    pass
+  return tmp_file
 
 
 def quote(s):
@@ -67,10 +71,10 @@ def is_wave(path):
   """Checks whether a file is in WAVE format.
 
   Args:
-    path: A string.
+    path: The path to a file.
 
   Returns:
-    True if it the file is a WAVE; otherwise False.
+    True if the file is a WAVE; otherwise False.
   """
   fileb = subprocess.check_output(['file', '-b', path])
 
@@ -82,6 +86,7 @@ def is_wave(path):
           return True
       except (IOError, wave.Error):
           return False
+
 
 def is_mp3(path):
   """Checks whether a file is in MP3 format.

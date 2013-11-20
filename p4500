@@ -28,36 +28,32 @@ def check_args():
     return False
   return True
 
+
 def main():
   if not check_args():
     sys.exit(1)
-  file1 = sys.argv[2]
-  file2 = sys.argv[4]
-
-  # Returns a file path, "/tmp/newfile.wav"
-  if utils.is_mp3(file1):
-    file1 = normalize.mp3_to_wav(file1)
-  if utils.is_mp3(file2):
-    file2 = normalize.mp3_to_wav(file2)
-
-  if not (utils.is_wave(file1) and utils.is_wave(file2)):
+  file1 = file(sys.argv[2])
+  file2 = file(sys.argv[4])
+  if utils.is_mp3(file1.name):
+    file1 = normalize.mp3_to_wav(file1.name)
+  if utils.is_mp3(file2.name):
+    file2 = normalize.mp3_to_wav(file2.name)
+  if not (utils.is_wave(file1.name) and utils.is_wave(file2.name)):
     sys.stderr.write(
       'ERROR Usage: input files must be of MP3 or WAVE format\n')
     sys.exit(1)
-  audio_file1 = normalize.normalize_wave_file(file1)
-  audio_file2 = normalize.normalize_wave_file(file2)
-  # ffts1 = normalize.get_ffts(audio_file1)
-  # ffts2 = normalize.get_ffts(audio_file2)
-
-  (fft1, ceps1) = normalize.get_mfcc(audio_file1)
-  (fft2, ceps2) = normalize.get_mfcc(audio_file2)
-
+  file1 = normalize.normalize_wave_file(file1.name)
+  file2 = normalize.normalize_wave_file(file2.name)
+  (fft1, ceps1) = normalize.get_mfcc(file1.name)
+  (fft2, ceps2) = normalize.get_mfcc(file2.name)
   match = comparator.compare(ceps1, ceps2) or \
       comparator.compare(fft1, fft2)
   if match:
     print "MATCH"
   else:
     print "NO MATCH"
+  file1.close()
+  file2.close()
 
 
 if __name__ == '__main__':

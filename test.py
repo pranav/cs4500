@@ -2,7 +2,6 @@
 
 import math
 import os
-import os.path
 import random
 import struct
 import unittest
@@ -137,26 +136,16 @@ class TestFileNormalization(unittest.TestCase):
       self.slow_noise_file)
 
     # Get params of normalized files
-    nfn = wave.open(self.noise_file_norm)
+    nfn = wave.open(self.noise_file_norm.name, 'rb')
     nfnparam = nfn.getparams()
     self.noise_norm_channels = nfnparam[0]
     self.noise_norm_hz = nfnparam[2]
     nfn.close()
-    snfn = wave.open(self.slow_noise_file_norm)
+    snfn = wave.open(self.slow_noise_file_norm.name, 'rb')
     snfnparam = snfn.getparams()
     self.slow_noise_norm_channels = snfnparam[0]
     self.slow_noise_norm_hz = snfnparam[2]
     snfn.close()
-
-  def test_output_file_exists(self):
-    """Test to make sure file generation was successful"""
-    self.assertTrue(os.path.isfile(self.noise_file_norm))
-    self.assertTrue(os.path.isfile(self.slow_noise_file_norm))
-
-  def test_output_file_is_in_tmp(self):
-    """Test to make sure generated files have been placed in /tmp"""
-    self.assertTrue(self.noise_file_norm.startswith('/tmp'))
-    self.assertTrue(self.slow_noise_file_norm.startswith('/tmp'))
 
   def test_output_file_is_in_mono(self):
     """Test to make sure generated files only have one channel"""
@@ -173,8 +162,6 @@ class TestFileNormalization(unittest.TestCase):
     """Remove generated files after tests are done"""
     os.remove(self.noise_file)
     os.remove(self.slow_noise_file)
-    os.remove(self.noise_file_norm)
-    os.remove(self.slow_noise_file_norm)
 
 
 class TestGetFFT(unittest.TestCase):
@@ -385,6 +372,30 @@ class TestQuote(unittest.TestCase):
     self.assertEqual(utils.quote('quote me'), '\'quote me\'')
     self.assertEqual(utils.quote('123 45$'), '\'123 45$\'')
 
-# If this script is run from the command line, run the above tests
+
+class TestTemporaryFiles():
+  """Tests creation and deletion of temporary files."""
+
+  def setUp(self):
+    self.tmp_file = utils.get_tmp_file('_')
+
+  def test_file_creation(self):
+    """Tests that file creation succeeded."""
+    self.assertTrue(os.path.isfile(self.tmp_file.name))
+
+  def test_creation_in_tmp(self):
+    """Tests that the file was created in /tmp."""
+    self.assertTrue(self.tmp_file.name.starts_with('/tmp/'))
+
+  def test_file_deletion(self):
+    """Tests that the file is deleted when it is closed."""
+    self.tmp_file2 = utils.get_tmp_file('-')
+    self.assertTrue(os.path.isfile(self.tmp_file2.name))
+    self.tmp_file2.close()
+    self.assertFalse(os.path.isfile(self.tmp_file2.name))
+
+  def tearDown(self):
+    self.tmp_file.close()
+
 if __name__ == '__main__':
   unittest.main()
