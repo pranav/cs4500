@@ -32,5 +32,7 @@ Third Party Software Used
 -------------------------
 
 * Python 2.7 and several modules installed on the CCIS Linux
-  machines (`audioop`, `numpy`, `numpy.fft`, `os`, `re`,
-  `scipy.io.wavfile`, `subprocess`, `sys`, `wave`)
+  machines
+  - audioop, os, sys, wave, numpy, numpy.fft, scipy.signal, scipy.signal.lfilter,
+    scipy.signal.hamming, scipy.fftpack.realtransforms.dct, math, random, struct,
+    unittest, subprocess, tempfile, scipy.io.wavfile, mutagen.mp3
