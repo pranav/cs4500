@@ -94,12 +94,12 @@ def main():
     for j in range(0, len(data2)):
       fft2, ceps2 = data2[j]
       f2 = os.path.basename(good_paths2[j])
-      match = (comparator.compare(fft1, fft2, FFT_MATCH_THRESHOLD) or 
+      match = (comparator.compare(fft1, fft2, FFT_MATCH_THRESHOLD) or
                comparator.compare(ceps1, ceps2, MFCC_MATCH_THRESHOLD))
       if match:
         print 'MATCH {0} {1}'.format(f1, f2)
       else:
-        print 'NO MATCH {0} {1}'.format(f1, f2)
+        print 'NO MATCH'
   # Close and delete all generated temp files
   for f in normalized1:
     f.close()
