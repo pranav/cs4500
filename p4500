@@ -68,6 +68,26 @@ def get_paths(is_file, path):
   return [os.path.join(path, f) for f in os.listdir(path)]
 
 
+def get_data(path):
+  """Normalizes the file led to by the given path, then calculates and returns
+  the FFTs and MFCCs of the normalized representation.
+
+  Args:
+    path: The path leading to an MP3 or WAVE file.
+
+  Returns:
+    A two-element tuple in which:
+      1. the first element is the array of the FFTs of the normalized 
+         representation of the file led to by path, and
+      2. the second element is the array of the MFCCs of the normalized
+         representation of the file led to by path.
+  """
+  f = normalize.normalize_file(path)
+  ffts, mfccs = normalize.get_mfcc(f.name)
+  f.close()
+  return ffts, mfccs
+
+
 def main():
   # Check if syntax is correct
   if not check_args():
@@ -81,12 +101,9 @@ def main():
   # Stop here if at least one group of files is empty
   if not good_paths1 or not good_paths2:
     sys.exit(1)
-  # Normalize remaining files
-  normalized1 = [normalize.normalize_file(f) for f in good_paths1]
-  normalized2 = [normalize.normalize_file(f) for f in good_paths2]
-  # Compute the FFTs and MFCCs of all normalized files
-  data1 = [normalize.get_mfcc(f.name) for f in normalized1]
-  data2 = [normalize.get_mfcc(f.name) for f in normalized2]
+  # Compute the FFTs and MFCCs of all good files
+  data1 = [get_data(path) for path in good_paths1]
+  data2 = [get_data(path) for path in good_paths2]
   # Check for matches between all possible pairs of files
   for i in range(0, len(data1)):
     fft1, ceps1 = data1[i]
@@ -100,11 +117,6 @@ def main():
         print 'MATCH {0} {1}'.format(f1, f2)
       else:
         print 'NO MATCH'
-  # Close and delete all generated temp files
-  for f in normalized1:
-    f.close()
-  for f in normalized2:
-    f.close()
   # Exit with error code 1 if any input files were in an improper format
   if len(paths1) != len(good_paths1) or len(paths2) != len(good_paths2):
     sys.exit(1)
