@@ -14,12 +14,17 @@ Usage
 -----
 
 To run our software on the CCIS Linux machines, `cd` into the directory
-containing this software's executable and execute the command:
+containing this software's executable and execute a command of one of the
+following forms:
 
     $ ./p4500 -f <path> -f <path>
+    $ ./p4500 -f <path> -d <path>
+    $ ./p4500 -d <path> -f <path>
+    $ ./p4500 -d <path> -d <path>
 
-where `<path>` is a Linux path to a file that exists on the CCIS shared
-file system and is in WAVE format.
+where `<path>` is a Linux path name for a file or directory on the CCIS shared file system.
+
+If the `<path>` is preceded by the "-f" option, then the `<path>` must lead to a file that is in either WAVE or MP3 format. If the `<path>` is preceded by the "-d" option, then the `<path>` must lead to a directory whose contents consist entirely of files in WAVE or MP3 format.
 
 
 

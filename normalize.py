@@ -14,6 +14,22 @@ import utils
 from config import *
 
 
+def normalize_file(path):
+  """Normalizes a file in either MP3 or WAVE format to single channel WAVE.
+
+  Args:
+    path: The path to the MP3 or WAVE file.
+
+  Returns:
+    The normalized mono channel WAVE file.
+  """
+  f = file(path)
+  if (utils.is_mp3(f.name)):
+    f = mp3_to_wav(f.name)
+  f = normalize_wave_file(f.name)
+  return f
+
+
 # TODO: Normalize tempo to 100 bpm
 def normalize_wave_file(path):
   """Normalizes a WAVE file to single channel WAVE.

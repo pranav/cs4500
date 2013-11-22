@@ -84,7 +84,7 @@ def is_wave(path):
       try:
           wave.open(path).close()
           return True
-      except (IOError, wave.Error):
+      except (IOError, EOFError, wave.Error):
           return False
 
 
