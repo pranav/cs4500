@@ -17,7 +17,10 @@ def check_args():
   Returns:
     True if the arguments are correct; otherwise False.
   """
-
+  usage = ['  {0} -f <path> -f <path>\n',
+           '  {0} -f <path> -d <path>\n',
+           '  {0} -d <path> -f <path>\n',
+           '  {0} -d <path> -d <path>\n']
   args_good = (len(sys.argv) == 5 
                and 
                (
@@ -34,8 +37,8 @@ def check_args():
               )
 
   if not args_good:
-    sys.stderr.write('ERROR Usage: {0} <flag1> <path1> <flag2> <path2>\n'
-                     .format(sys.argv[0]))
+    sys.stderr.write('ERROR Usage: one of\n')
+    sys.stderr.writelines([s.format(sys.argv[0]) for s in usage])
     return False
   return True 
 
