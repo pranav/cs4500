@@ -17,30 +17,20 @@ def check_args():
   Returns:
     True if the arguments are correct; otherwise False.
   """
-  usage = ['  {0} -f <path> -f <path>\n',
-           '  {0} -f <path> -d <path>\n',
-           '  {0} -d <path> -f <path>\n',
-           '  {0} -d <path> -d <path>\n']
-  args_good = (len(sys.argv) == 5 
-               and 
-               (
-                 (sys.argv[1] == '-f' and os.path.isfile(sys.argv[2])) 
-                 or
-                 (sys.argv[1] == '-d' and os.path.isdir(sys.argv[2]))
-               ) 
-               and
-               (
-                 (sys.argv[3] == '-f' and os.path.isfile(sys.argv[4])) 
-                 or
-                 (sys.argv[3] == '-d' and os.path.isdir(sys.argv[4]))
-               )
-              )
-
+  usage = ['ERROR  {0} -f <path> -f <path>\n',
+           'ERROR  {0} -f <path> -d <path>\n',
+           'ERROR  {0} -d <path> -f <path>\n',
+           'ERROR  {0} -d <path> -d <path>\n']
+  args_good = (len(sys.argv) == 5 and 
+               ((sys.argv[1] == '-f' and os.path.isfile(sys.argv[2])) or
+                (sys.argv[1] == '-d' and os.path.isdir(sys.argv[2]))) and
+               ((sys.argv[3] == '-f' and os.path.isfile(sys.argv[4])) or
+                (sys.argv[3] == '-d' and os.path.isdir(sys.argv[4]))))
   if not args_good:
     sys.stderr.write('ERROR Usage: one of\n')
     sys.stderr.writelines([s.format(sys.argv[0]) for s in usage])
     return False
-  return True 
+  return True
 
 
 def check_file(path):
@@ -55,81 +45,68 @@ def check_file(path):
     True if the file is in either MP3 or WAVE format; otherwise False.
   """
   if not (utils.is_mp3(path) or utils.is_wave(path)):
-    sys.stderr.write(
-      'ERROR Usage on {0}: input files must be of MP3 or WAVE format\n'
-      .format(utils.quote(path))
-    )
+    sys.stderr.write('ERROR {0}: invalid format for {1}: input files must be '
+                     'of MP3 or WAVE format\n'.format(sys.argv[0], path))
     return False
   return True
+
+
+def get_paths(is_file, path):
+  """Returns a list of file paths described by a path.
+
+  Args:
+    is_file: Whether the path names a regular file or a directory.
+    path: The path to investigate.
+
+  Returns:
+    If is_file is true, a list containing path; otherwise, a list
+    containing the contents of the directory named by path.
+  """
+  if is_file:
+    return [path]
+  path = os.path.normpath(path)
+  return [os.join(path, f) for f in os.listdir(path)]
 
 
 def main():
   # Check if syntax is correct
   if not check_args():
     sys.exit(1)
-
   # Verify format of input files
-  bad_input = False
-  path1_files = []
-  path2_files = []
-
-  if (sys.argv[1] == '-f'):
-    path1_files = [sys.argv[2]]
-  else:
-    # Strip off any trailing '/'s from the directory name
-    while sys.argv[2].endswith('/'):
-      sys.argv[2] = sys.argv[2][:-1]
-    path1_files = [sys.argv[2] + '/' + f for f in os.listdir(sys.argv[2])]
-
-  if (sys.argv[3] == '-f'):
-    path2_files = [sys.argv[4]]
-  else:
-    # Strip off any trailing '/'s from the directory name
-    while sys.argv[4].endswith('/'):
-      sys.argv[4] = sys.argv[4][:-1]
-    path2_files = [sys.argv[4] + '/' + f for f in os.listdir(sys.argv[4])]
-
+  paths1 = get_paths(sys.argv[1] == '-f', sys.argv[2])
+  paths2 = get_paths(sys.argv[3] == '-f', sys.argv[4])
   # Filter out input of improper format
-  good_path1_files = [f for f in path1_files if check_file(f)]
-  good_path2_files = [f for f in path2_files if check_file(f)]
-
+  good_paths1 = [f for f in paths1 if check_file(f)]
+  good_paths2 = [f for f in paths2 if check_file(f)]
   # Stop here if at least one group of files is empty
-  if (len(good_path1_files) == 0 or len(good_path2_files) == 0):
+  if not good_paths1 or not good_paths2:
     sys.exit(1)
-
   # Normalize remaining files
-  normalized1 = [normalize.normalize_file(f) for f in good_path1_files]
-  normalized2 = [normalize.normalize_file(f) for f in good_path2_files]
-
+  normalized1 = [normalize.normalize_file(f) for f in good_paths1]
+  normalized2 = [normalize.normalize_file(f) for f in good_paths2]
   # Compute the FFTs and MFCCs of all normalized files
-  path1_data = [normalize.get_mfcc(f.name) for f in normalized1]
-  path2_data = [normalize.get_mfcc(f.name) for f in normalized2]
-      
+  data1 = [normalize.get_mfcc(f.name) for f in normalized1]
+  data2 = [normalize.get_mfcc(f.name) for f in normalized2]
   # Check for matches between all possible pairs of files
-  for i in range(0, len(path1_data)):
-    fft1, ceps1 = path1_data[i]
-    f1 = good_path1_files[i]
-
-    for j in range(0, len(path2_data)):
-      fft2, ceps2 = path2_data[j]
-      f2 = good_path2_files[j]
-  
+  for i in range(0, len(data1)):
+    fft1, ceps1 = data1[i]
+    f1 = os.path.basename(good_paths1[i])
+    for j in range(0, len(data2)):
+      fft2, ceps2 = data2[j]
+      f2 = os.path.basename(good_paths2[j])
       match = (comparator.compare(fft1, fft2, FFT_MATCH_THRESHOLD) or 
                comparator.compare(ceps1, ceps2, MFCC_MATCH_THRESHOLD))
       if match:
-        print 'MATCH: {0} {1}'.format(utils.quote(f1), utils.quote(f2))
+        print 'MATCH {0} {1}'.format(f1, f2)
       else:
-        print 'NO MATCH: {0} {1}'.format(utils.quote(f1), utils.quote(f2))
-  
+        print 'NO MATCH {0} {1}'.format(f1, f2)
   # Close and delete all generated temp files
   for f in normalized1:
     f.close()
   for f in normalized2:
     f.close()
-
   # Exit with error code 1 if any input files were in an improper format
-  if (len(path1_files) != len(good_path1_files) or 
-      len(path2_files) != len(good_path2_files)):
+  if len(paths1) != len(good_paths1) or len(paths2) != len(good_paths2):
     sys.exit(1)
 
 
