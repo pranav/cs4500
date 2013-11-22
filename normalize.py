@@ -154,25 +154,23 @@ def get_mfcc(path):
     # Obtain the frame_indexth frame from the data
     frame = data[frame_index * step:(frame_index + 1) * step]
     frame = pre_emphasis(frame, prefactor)
-
     # Generate the FFT of the frame windowed by the hamming window
-    frame_fft = numpy.fft.fft(frame * window)
-
+    frame_fft = numpy.fft.rfft(frame * window, n=512)
+    frame_fft[frame_fft == 0] = 0.000003
     nfft = len(frame_fft)
-
     # Compute the mel triangular filterbank or get a cached version
     fb_key = (sample, nfft)
     if fb_key in filterbank_cache:
         filterbank = filterbank_cache[fb_key]
     else:
-        filterbank = triangular_filters(sample, nfft)
+        filterbank = triangular_filters(sample, nfft).T
+        filterbank[filterbank == 0] = 0.00003
         filterbank_cache[fb_key] = filterbank
-
     # The power spectrum of the frame
     power_spectrum = numpy.abs(frame_fft)
     # Filtered by the mel filterbank
-    mel_power_spectrum = numpy.log10(numpy.dot(power_spectrum, filterbank.T))
-    # With the Discrete Cosine Transform to find the cepstrum
+    mel_power_spectrum = numpy.log10(numpy.dot(power_spectrum, filterbank))
+    # With the discrete cosine transform to find the cepstrum
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
     fft_out.append(frame_fft)
     mfcc_out.append(cepstrum)
@@ -182,6 +180,7 @@ def get_mfcc(path):
 
 def pre_emphasis(frame, factor):
     return lfilter([1., -factor], 1, frame)
+
 
 def get_ffts(audio_file):
   """Computes the FFT of each frame of a WAVE file.
