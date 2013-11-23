@@ -88,6 +88,51 @@ def get_data(path):
   return ffts, mfccs
 
 
+def print_matches(paths1, paths2):
+  """Finds and prints matches between two sets of files.
+
+  For every pair of files from the two sets, prints 'MATCH ' followed by
+  the base names of the two files if they match, or prints 'NO MATCH' if
+  they don't. 'MATCH' lines might also have parenthesized debugging
+  information following the two base names.
+
+  Args:
+    paths1: An iterable of paths.
+    paths2: Another iterable of paths.
+  """
+  data1 = [get_data(path) for path in paths1]
+  data2 = [get_data(path) for path in paths2]
+  cache = set() # (shorter, longer)
+  for i in range(len(data1)):
+    path1 = paths1[i]
+    for j in range(len(data2)):
+      path2 = paths2[j]
+      if (path1, path2) in cache or (path2, path1) in cache:
+        match = True
+      else:
+        ffts1, mfccs1 = data1[i]
+        ffts2, mfccs2 = data2[j]
+        match = (comparator.compare(ffts1, ffts2, FFT_MATCH_THRESHOLD) or
+                 comparator.compare(mfccs1, mfccs2, MFCC_MATCH_THRESHOLD))
+        if match:
+          if match == -1:
+            cache.add((path1, path2))
+          elif match == 1:
+            cache.add((path2, path1))
+          while True:
+            addition = set((a, y)
+                           for a, b in cache for x, y in cache if b == x)
+            if addition <= cache:
+              break
+            cache = cache | addition
+      if match:
+        print 'MATCH {0} {1} ({2})'.format(os.path.basename(path1),
+                                           os.path.basename(path2),
+                                           match)
+      else:
+        print 'NO MATCH'
+
+
 def main():
   # Check if syntax is correct
   if not check_args():
@@ -101,22 +146,8 @@ def main():
   # Stop here if at least one group of files is empty
   if not good_paths1 or not good_paths2:
     sys.exit(1)
-  # Compute the FFTs and MFCCs of all good files
-  data1 = [get_data(path) for path in good_paths1]
-  data2 = [get_data(path) for path in good_paths2]
   # Check for matches between all possible pairs of files
-  for i in range(0, len(data1)):
-    fft1, ceps1 = data1[i]
-    f1 = os.path.basename(good_paths1[i])
-    for j in range(0, len(data2)):
-      fft2, ceps2 = data2[j]
-      f2 = os.path.basename(good_paths2[j])
-      match = (comparator.compare(fft1, fft2, FFT_MATCH_THRESHOLD) or
-               comparator.compare(ceps1, ceps2, MFCC_MATCH_THRESHOLD))
-      if match:
-        print 'MATCH {0} {1}'.format(f1, f2)
-      else:
-        print 'NO MATCH'
+  print_matches(good_paths1, good_paths2)
   # Exit with error code 1 if any input files were in an improper format
   if len(paths1) != len(good_paths1) or len(paths2) != len(good_paths2):
     sys.exit(1)
