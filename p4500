@@ -21,7 +21,7 @@ def check_args():
            'ERROR  {0} -f <path> -d <path>\n',
            'ERROR  {0} -d <path> -f <path>\n',
            'ERROR  {0} -d <path> -d <path>\n']
-  args_good = (len(sys.argv) == 5 and 
+  args_good = (len(sys.argv) == 5 and
                ((sys.argv[1] == '-f' and os.path.isfile(sys.argv[2])) or
                 (sys.argv[1] == '-d' and os.path.isdir(sys.argv[2]))) and
                ((sys.argv[3] == '-f' and os.path.isfile(sys.argv[4])) or
@@ -76,7 +76,7 @@ def get_data(path):
     path: The path leading to an MP3 or WAVE file.
 
   Returns:
-    The array of the MFCCs of the normalized representation of the file 
+    The array of the MFCCs of the normalized representation of the file
     led to by path.
   """
   f = normalize.normalize_file(path)

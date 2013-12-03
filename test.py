@@ -26,9 +26,37 @@ class TestLogistics(unittest.TestCase):
         for name in os.listdir(os.curdir):
             if name == 'p4500' or name.endswith('.py'):
                 with open(name) as f:
-                    for line_number, line in enumerate(f):
+                    for line_number, line in enumerate(f, 1):
                         line = line.rstrip('\n')
-                        self.assertTrue(len(line.rstrip('\n')) < 80,
+                        self.assertTrue(len(line) < 80,
+                                        '{0}:{1}:{2}'.format(name, line_number,
+                                                             line))
+
+    def test_trailing_whitespace(self):
+        """Tests that no lines end with whitespace.
+
+        This checks all files in the current directory.
+        """
+        for name in os.listdir(os.curdir):
+            if os.path.isfile(name):
+                with open(name) as f:
+                    for line_number, line in enumerate(f, 1):
+                        line = line.rstrip('\n')
+                        self.assertTrue(line == line.rstrip(),
+                                        '{0}:{1}:{2}'.format(name, line_number,
+                                                             line))
+
+    def test_no_tab_characters(self):
+        """Tests that no lines have tab characters.
+
+        This checks all Python files in the current directory.
+        """
+        for name in os.listdir(os.curdir):
+            if name == 'p4500' or name.endswith('.py'):
+                with open(name) as f:
+                    for line_number, line in enumerate(f, 1):
+                        line = line.rstrip('\n')
+                        self.assertTrue('\t' not in line,
                                         '{0}:{1}:{2}'.format(name, line_number,
                                                              line))
 
