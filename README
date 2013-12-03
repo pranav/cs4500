@@ -35,8 +35,20 @@ entirely of files in WAVE or MP3 format.
 Third Party Software Used
 -------------------------
 
-* Python 2.7 and several modules installed on the CCIS Linux
-  machines
-  - audioop, os, sys, wave, numpy, numpy.fft, scipy.signal, scipy.signal.lfilter,
-    scipy.signal.hamming, scipy.fftpack.realtransforms.dct, math, random, struct,
-    unittest, subprocess, tempfile, scipy.io.wavfile, mutagen.mp3
+* Python 2.7 and several modules installed on the CCIS Linux machines
+** `audioop`
+** `math`
+** `mutagen.mp3`
+** `numpy`
+** `numpy.fft`
+** `os`
+** `random`
+** `scipy.io.wavfile`
+** `scipy.fftpack.realtransforms`
+** `scipy.signal`
+** `struct`
+** `subprocess`
+** `sys`
+** `tempfile`
+** `unittest`
+** `wave`

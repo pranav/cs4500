@@ -5,10 +5,8 @@ import wave
 
 import numpy
 import numpy.fft
-
-import scipy.signal
-from scipy.signal import lfilter, hamming
 from scipy.fftpack.realtransforms import dct
+from scipy.signal import lfilter, hamming
 
 import utils
 from config import *
@@ -32,7 +30,6 @@ def normalize_file(path):
   return f
 
 
-# TODO: Normalize tempo to 100 bpm
 def normalize_wave_file(path):
   """Normalizes a WAVE file to single channel WAVE.
 
@@ -74,6 +71,7 @@ def mp3_to_wav(path):
   os.system('/course/cs4500f13/bin/lame --decode --mp3input --quiet {0} {1}'
             .format(utils.quote(path), utils.quote(tmp_file.name)))
   return tmp_file
+
 
 def wav_to_mp3(path):
   """Converts a WAVE file to an MP3 file.

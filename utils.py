@@ -4,8 +4,8 @@ import subprocess
 import tempfile
 import wave
 
-import scipy.io.wavfile
 from mutagen.mp3 import MP3
+import scipy.io.wavfile
 
 
 def read_wave_from_file(path):
@@ -23,6 +23,7 @@ def read_wave_from_file(path):
     (rate, data) = scipy.io.wavfile.read(path)
   sys.stdout = sys.__stdout__
   return (rate, data)
+
 
 def write_wave_to_file(path, rate, data):
   """Writes a WAVE file.
@@ -77,8 +78,7 @@ def is_wave(path):
     True if the file is a WAVE; otherwise False.
   """
   fileb = subprocess.check_output(['file', '-b', path])
-
-  if "WAVE audio" in fileb:
+  if 'WAVE audio' in fileb:
       return True;
   else:
       try:
@@ -102,11 +102,10 @@ def is_mp3(path):
     True if it the file is an MP3; otherwise False.
   """
   fileb = subprocess.check_output(['file', '-b', path])
-
-  if "MPEG ADTS, layer III" in fileb:
+  if 'MPEG ADTS, layer III' in fileb:
       return True;
-  elif "ID3" in fileb:
+  elif 'ID3' in fileb:
       audio = MP3(path)
-      return "audio/mp3" in audio.mime
+      return 'audio/mp3' in audio.mime
   else:
       return False
