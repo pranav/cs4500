@@ -24,6 +24,8 @@ def normalize_file(path):
     The normalized mono channel WAVE file.
   """
   f = file(path)
+  #if (utils.is_wave(f.name)):
+  #  f = wav_to_mp3(f.name)
   if (utils.is_mp3(f.name)):
     f = mp3_to_wav(f.name)
   f = normalize_wave_file(f.name)
@@ -73,6 +75,19 @@ def mp3_to_wav(path):
             .format(utils.quote(path), utils.quote(tmp_file.name)))
   return tmp_file
 
+def wav_to_mp3(path):
+  """Converts a WAVE file to an MP3 file.
+
+  Args:
+    pat: The path to a WAVE file.
+
+  Returns:
+    The generated MP3 file.
+  """
+  tmp_file = utils.get_tmp_file(path)
+  os.system('/course/cs4500f13/bin/lame -h --quiet {0} {1}'
+            .format(utils.quote(path), utils.quote(tmp_file.name)))
+  return tmp_file
 
 def triangular_filters(sample, nfft):
   """Compute the mel triangular filters for the frame.
@@ -150,12 +165,12 @@ def get_mfcc(path):
   #    frames of the WAVE file
   filterbank_cache = {}
   frame_index = 0
-  while frame_index < total_frames:
+  while frame_index + .5 < total_frames:
     # Obtain the frame_indexth frame from the data
     frame = data[frame_index * step:(frame_index + 1) * step]
-    frame = pre_emphasis(frame, prefactor)
+    # frame = pre_emphasis(frame, prefactor)
     # Generate the FFT of the frame windowed by the hamming window
-    frame_fft = numpy.fft.rfft(frame * window, n=512)
+    frame_fft = numpy.fft.rfft(frame * window, n=256)
     frame_fft[frame_fft == 0] = 0.000003
     nfft = len(frame_fft)
     # Compute the mel triangular filterbank or get a cached version
@@ -174,11 +189,21 @@ def get_mfcc(path):
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
     fft_out.append(frame_fft)
     mfcc_out.append(cepstrum)
-    frame_index = frame_index + 1
+    frame_index = frame_index + .5
   return (fft_out, mfcc_out)
 
 
 def pre_emphasis(frame, factor):
+    """Apply a pre-emphasis filter to the frame by a given factor.  The pre-
+    emphasis is intended to be the first part of noise reduction.
+
+    Args:
+      frame
+      factor: an integer to represent the factor for the pre-emphasis filter
+
+    Returns:
+      the frame with an applied pre-emphasis filter
+    """
     return lfilter([1., -factor], 1, frame)
 
 
