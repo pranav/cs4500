@@ -22,8 +22,8 @@ def compare(arrs1, arrs2, match_threshold):
   if len(arrs1) > len(arrs2):
     shorter = arrs2
     longer = arrs1
-  match_threshold = match_threshold * max(numpy.amax(arrs1[0]),
-                                          numpy.amax(arrs2[0]))
+  # match_threshold = match_threshold * max(numpy.amax(arrs1[0]),
+  #                                        numpy.amax(arrs2[0]))
   i = 0 # Current index in shorter iterable
   j = 0 # Current index in longer iterable
   j_prev = 0 # Index in longer file where sequential matching began
