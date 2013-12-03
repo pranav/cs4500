@@ -25,8 +25,8 @@ following forms:
 where `<path>` is a Linux path name for a file or directory on the CCIS shared
 file system.
 
-If the `<path>` is preceded by the "-f" option, then the `<path>` must lead to a
-file that is in either WAVE or MP3 format. If the `<path>` is preceded by the
+If the `<path>` is preceded by the "-f" option, then the `<path>` must lead to
+a file that is in either WAVE or MP3 format. If the `<path>` is preceded by the
 "-d" option, then the `<path>` must lead to a directory whose contents consist
 entirely of files in WAVE or MP3 format.
 

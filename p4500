@@ -109,7 +109,7 @@ def print_matches(paths1, paths2):
       else:
         mfccs1 = data1[i]
         mfccs2 = data2[j]
-        match = comparator.compare( mfccs1, mfccs2, MFCC_MATCH_THRESHOLD )
+        match = comparator.compare(mfccs1, mfccs2, MFCC_MATCH_THRESHOLD)
         if match:
           if match == -1:
             cache.add((path1, path2))

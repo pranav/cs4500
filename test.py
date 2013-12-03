@@ -1,33 +1,36 @@
 #!/usr/bin/python -B
 
 import math
+import numpy
 import os
 import random
 import struct
 import unittest
 import wave
 
-import numpy
-
 import comparator
 from config import *
 import normalize
 import utils
 
+
 class TestLogistics(unittest.TestCase):
-    """Test that files are of the proper format and that we have proper
-    citations"""
+    """Tests that files are of the proper format and that we have proper
+    citations."""
 
     def test_line_length(self):
-        """Tests that there are no lines that are greater than 78
-        characters long.  This will check all files in the current
-        directory"""
+        """Tests that all lines are less than 80 characters long.
 
-        files = [f for f in os.listdir('.') if os.path.isfile(f)]
-        for f in files:
-            valid = True
-            for lines in f:
-                self.assertTrue( len( lines.strip() ) <= 78 )
+        This checks all Python files in the current directory.
+        """
+        for name in os.listdir(os.curdir):
+            if name == 'p4500' or name.endswith('.py'):
+                with open(name) as f:
+                    for line_number, line in enumerate(f):
+                        line = line.rstrip('\n')
+                        self.assertTrue(len(line.rstrip('\n')) < 80,
+                                        '{0}:{1}:{2}'.format(name, line_number,
+                                                             line))
 
 
 class TestFileDetection(unittest.TestCase):
@@ -329,8 +332,10 @@ class TestMeanSquaredError(unittest.TestCase):
     and (1, 1, 1, 1, 1) is 1."""
     self.assertEqual(comparator.distance(self.five_zeros, self.int_ones), 1)
     self.assertEqual(comparator.distance(self.int_ones, self.five_zeros), 1)
-    self.assertEqual(comparator.distance(self.five_zeros, self.complex_ones), 1)
-    self.assertEqual(comparator.distance(self.complex_ones, self.five_zeros), 1)
+    self.assertEqual(comparator.distance(self.five_zeros, self.complex_ones),
+                     1)
+    self.assertEqual(comparator.distance(self.complex_ones, self.five_zeros),
+                     1)
 
   def test_error_should_be_25_over_2(self):
     """Tests that the mean squared error between (0, 0) and (3, 4) is
