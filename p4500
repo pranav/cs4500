@@ -131,11 +131,8 @@ def print_matches(paths1, paths2):
                                            os.path.basename(path2),
                                            match)
       else:
-<<<<<<< HEAD
         pass
-=======
->>>>>>> trans
-        print 'NO MATCH'
+        # print 'NO MATCH'
 
 
 def main():
