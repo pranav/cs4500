@@ -70,22 +70,19 @@ def get_paths(is_file, path):
 
 def get_data(path):
   """Normalizes the file led to by the given path, then calculates and returns
-  the FFTs and MFCCs of the normalized representation.
+  the MFCCs of the normalized representation.
 
   Args:
     path: The path leading to an MP3 or WAVE file.
 
   Returns:
-    A two-element tuple in which:
-      1. the first element is the array of the FFTs of the normalized 
-         representation of the file led to by path, and
-      2. the second element is the array of the MFCCs of the normalized
-         representation of the file led to by path.
+    The array of the MFCCs of the normalized representation of the file 
+    led to by path.
   """
   f = normalize.normalize_file(path)
-  ffts, mfccs = normalize.get_mfcc(f.name)
+  mfccs = normalize.get_mfcc(f.name)
   f.close()
-  return ffts, mfccs
+  return mfccs
 
 
 def print_matches(paths1, paths2):
@@ -110,11 +107,9 @@ def print_matches(paths1, paths2):
       if (path1, path2) in cache or (path2, path1) in cache:
         match = True
       else:
-        ffts1, mfccs1 = data1[i]
-        ffts2, mfccs2 = data2[j]
+        mfccs1 = data1[i]
+        mfccs2 = data2[j]
         match = comparator.compare( mfccs1, mfccs2, MFCC_MATCH_THRESHOLD )
-        # match = (comparator.compare(ffts1, ffts2, FFT_MATCH_THRESHOLD) or
-        #         comparator.compare(mfccs1, mfccs2, MFCC_MATCH_THRESHOLD))
         if match:
           if match == -1:
             cache.add((path1, path2))

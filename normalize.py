@@ -191,10 +191,10 @@ def get_mfcc(path):
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
 
     fft_out.append(frame_fft)
-    mfcc_out.append(cepstrum)
+    mfcc_out.append(cepstrum[:int(len(cepstrum)*SIGNIFICANT_MFCC)])
     frame_index = frame_index + FRAME_OVERLAP_FACTOR
 
-  return (fft_out, mfcc_out)
+  return numpy.array(mfcc_out)
 
 
 def pre_emphasis(frame, factor):
