@@ -165,7 +165,7 @@ def get_mfcc(path):
   #    frames of the WAVE file
   filterbank_cache = {}
   frame_index = 0
-  while frame_index + .5 < total_frames:
+  while frame_index + (1 - FRAME_OVERLAP_FACTOR) < total_frames:
     # Obtain the frame_indexth frame from the data
     frame = data[frame_index * step:(frame_index + 1) * step]
     # frame = pre_emphasis(frame, prefactor)
@@ -189,7 +189,7 @@ def get_mfcc(path):
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
     fft_out.append(frame_fft)
     mfcc_out.append(cepstrum)
-    frame_index = frame_index + .5
+    frame_index = frame_index + FRAME_OVERLAP_FACTOR
   return (fft_out, mfcc_out)
 
 
