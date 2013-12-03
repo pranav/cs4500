@@ -5,7 +5,7 @@ import tempfile
 import wave
 
 import scipy.io.wavfile
-from mutagen import mp3
+from mutagen.mp3 import MP3
 
 
 def read_wave_from_file(path):

@@ -6,24 +6,23 @@ from config import *
 def compare(arrs1, arrs2, match_threshold):
   """Finds a fuzzy match of one iterable of NumPy arrays within another.
 
-  The order of arrs1 and arrs2 doesn't matter.
-
   Args:
     arrs1: An iterable of NumPy arrays.
     arrs2: Another iterable of NumPy arrays.
     match_threshold: The maximum distance between two matching arrays.
 
   Returns:
-    True if the entirety of the shorter iterable can be located in
-    sequential order within the longer iterable; otherwise False.
+    -1 if the entirety of the first iterable can be located in
+    sequential order within the longer iterable; 1 if the second is
+    within the first; otherwise 0.
   """
   shorter = arrs1
   longer = arrs2
   if len(arrs1) > len(arrs2):
     shorter = arrs2
     longer = arrs1
-  match_threshold = match_threshold * max(numpy.amax(arrs1[0]),
-                                          numpy.amax(arrs2[0]))
+  # match_threshold = match_threshold * max(numpy.amax(arrs1[0]),
+  #                                        numpy.amax(arrs2[0]))
   i = 0 # Current index in shorter iterable
   j = 0 # Current index in longer iterable
   j_prev = 0 # Index in longer file where sequential matching began
@@ -36,7 +35,7 @@ def compare(arrs1, arrs2, match_threshold):
   while i < len(shorter):
     # End of longer iterable reached: no match found
     if j == len(longer) or len(shorter) - i > len(longer) - j:
-      return False
+      return 0
     # Current examined arrays match
     if distance(shorter[i], longer[j]) < match_threshold:
       if i == 0:
@@ -49,7 +48,9 @@ def compare(arrs1, arrs2, match_threshold):
       j = j_prev + 1
       j_prev = j
   # End of shorter iterable reached: match found
-  return True
+  if shorter is arrs1:
+    return -1
+  return 1
 
 
 def euclidean_distance(arr1, arr2):
