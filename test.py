@@ -14,6 +14,21 @@ from config import *
 import normalize
 import utils
 
+class TestLogistics(unittest.TestCase):
+    """Test that files are of the proper format and that we have proper
+    citations"""
+
+    def test_line_length(self):
+        """Tests that there are no lines that are greater than 78
+        characters long.  This will check all files in the current
+        directory"""
+
+        files = [f for f in os.listdir('.') if os.path.isfile(f)]
+        for f in files:
+            valid = True
+            for lines in f:
+                self.assertTrue( len( lines.strip() ) <= 78 )
+
 
 class TestFileDetection(unittest.TestCase):
   """Test that WAVE, MP3, and other files are properly detected"""
@@ -353,7 +368,7 @@ class TestMatching(unittest.TestCase):
                                        MFCC_MATCH_THRESHOLD))
     self.assertTrue(comparator.compare(self.arr3, self.arr1,
                                        MFCC_MATCH_THRESHOLD))
- 
+
   def test_not_a_match(self):
     """Arrays containing different elements, where one is not a slice of the
     other, should not match if their elements are numerically far apart"""
