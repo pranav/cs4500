@@ -152,7 +152,6 @@ def get_mfcc(path):
   total_frames = (data.size / sample) / COMP_FRAME_SIZE
 
   step = COMP_FRAME_SIZE * sample
-  prefactor = 0.97
   window = hamming(step)
 
   # Allocate space for the FFT decompositions of each frame of sound data
@@ -165,14 +164,16 @@ def get_mfcc(path):
   #    frames of the WAVE file
   filterbank_cache = {}
   frame_index = 0
+
   while frame_index + (1 - FRAME_OVERLAP_FACTOR) < total_frames:
     # Obtain the frame_indexth frame from the data
     frame = data[frame_index * step:(frame_index + 1) * step]
-    # frame = pre_emphasis(frame, prefactor)
+
     # Generate the FFT of the frame windowed by the hamming window
     frame_fft = numpy.fft.rfft(frame * window, n=256)
     frame_fft[frame_fft == 0] = 0.000003
     nfft = len(frame_fft)
+
     # Compute the mel triangular filterbank or get a cached version
     fb_key = (sample, nfft)
     if fb_key in filterbank_cache:
@@ -181,15 +182,18 @@ def get_mfcc(path):
         filterbank = triangular_filters(sample, nfft).T
         filterbank[filterbank == 0] = 0.00003
         filterbank_cache[fb_key] = filterbank
+
     # The power spectrum of the frame
     power_spectrum = numpy.abs(frame_fft)
     # Filtered by the mel filterbank
     mel_power_spectrum = numpy.log10(numpy.dot(power_spectrum, filterbank))
     # With the discrete cosine transform to find the cepstrum
     cepstrum = dct(mel_power_spectrum, type=2, norm='ortho', axis=-1)
+
     fft_out.append(frame_fft)
     mfcc_out.append(cepstrum)
     frame_index = frame_index + FRAME_OVERLAP_FACTOR
+
   return (fft_out, mfcc_out)
 
 
