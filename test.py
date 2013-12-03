@@ -14,6 +14,7 @@ from config import *
 import normalize
 import utils
 
+
 class TestFileDetection(unittest.TestCase):
   """Test that WAVE, MP3, and other files are properly detected"""
 
@@ -329,35 +330,35 @@ class TestMatching(unittest.TestCase):
 
   def setUp(self):
     """Generate arrays to match"""
-    self.fft1 = numpy.array([[1, 5, 8], [2, 4, 0], [2, 2, 1]])
-    self.fft2 = numpy.array([[2, 4, 0], [2, 2, 1]])
-    self.fft3 = numpy.array([[0.9, 5.1, 7.9], [2, 4, 0.1], [1.9, 2.2, 1]])
-    self.fft4 = numpy.array([[7, 2, 4], [5, 25, 125], [1, 2, 5]])
+    self.arr1 = numpy.array([[1, 5, 8], [2, 4, 0], [2, 2, 1]])
+    self.arr2 = numpy.array([[2, 4, 0], [2, 2, 1]])
+    self.arr3 = numpy.array([[0.9, 5.1, 7.9], [2, 4, 0.1], [1.9, 2.2, 1]])
+    self.arr4 = numpy.array([[7, 2, 4], [5, 25, 125], [1, 2, 5]])
 
   def test_exact_match(self):
     """An array compared against itself should match"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft1,
-                                       FFT_MATCH_THRESHOLD))
+    self.assertTrue(comparator.compare(self.arr1, self.arr1,
+                                       MFCC_MATCH_THRESHOLD))
 
   def test_exact_partial_match(self):
     """An array compared against a different array that contains
     all of its elements in order should match"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft2,
-                                       FFT_MATCH_THRESHOLD))
+    self.assertTrue(comparator.compare(self.arr1, self.arr2,
+                                       MFCC_MATCH_THRESHOLD))
 
   def test_fuzzy_match(self):
     """Arrays containing different elements, where one is not a slice of the
     other, should match if their elements are numerically close together"""
-    self.assertTrue(comparator.compare(self.fft1, self.fft3,
-                                       FFT_MATCH_THRESHOLD))
-    self.assertTrue(comparator.compare(self.fft3, self.fft1,
-                                       FFT_MATCH_THRESHOLD))
-
+    self.assertTrue(comparator.compare(self.arr1, self.arr3,
+                                       MFCC_MATCH_THRESHOLD))
+    self.assertTrue(comparator.compare(self.arr3, self.arr1,
+                                       MFCC_MATCH_THRESHOLD))
+ 
   def test_not_a_match(self):
     """Arrays containing different elements, where one is not a slice of the
     other, should not match if their elements are numerically far apart"""
-    self.assertFalse(comparator.compare(self.fft1, self.fft4,
-                                        FFT_MATCH_THRESHOLD))
+    self.assertFalse(comparator.compare(self.arr1, self.arr4,
+                                        MFCC_MATCH_THRESHOLD))
 
 
 class TestQuote(unittest.TestCase):
@@ -378,7 +379,7 @@ class TestQuote(unittest.TestCase):
     self.assertEqual(utils.quote('123 45$'), '\'123 45$\'')
 
 
-class TestTemporaryFiles():
+class TestTemporaryFiles(unittest.TestCase):
   """Tests creation and deletion of temporary files."""
 
   def setUp(self):
@@ -390,7 +391,11 @@ class TestTemporaryFiles():
 
   def test_creation_in_tmp(self):
     """Tests that the file was created in /tmp."""
-    self.assertTrue(self.tmp_file.name.starts_with('/tmp/'))
+    self.assertTrue(self.tmp_file.name.startswith('/tmp/'))
+
+  def test_file_mode(self):
+    """Tests that the owner and the group have read and write access."""
+    self.assertTrue(os.stat(self.tmp_file.name).st_mode & 0o660)
 
   def test_file_deletion(self):
     """Tests that the file is deleted when it is closed."""
@@ -401,6 +406,7 @@ class TestTemporaryFiles():
 
   def tearDown(self):
     self.tmp_file.close()
+
 
 if __name__ == '__main__':
   unittest.main()
