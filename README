@@ -52,3 +52,4 @@ Third Party Software Used
 ** `tempfile`
 ** `unittest`
 ** `wave`
+** `re`

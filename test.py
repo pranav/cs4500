@@ -15,51 +15,74 @@ import utils
 
 
 class TestLogistics(unittest.TestCase):
-    """Tests that files are of the proper format and that we have proper
-    citations."""
+  """Tests that files are of the proper format and that we have proper
+  citations."""
 
-    def test_line_length(self):
-        """Tests that all lines are less than 80 characters long.
+  def test_line_length(self):
+    """Tests that all lines are less than 80 characters long.
 
-        This checks all Python files in the current directory.
-        """
-        for name in os.listdir(os.curdir):
-            if name == 'p4500' or name.endswith('.py'):
-                with open(name) as f:
-                    for line_number, line in enumerate(f, 1):
-                        line = line.rstrip('\n')
-                        self.assertTrue(len(line) < 80,
-                                        '{0}:{1}:{2}'.format(name, line_number,
-                                                             line))
+    This checks all Python files in the current directory.
+    """
+    for name in os.listdir(os.curdir):
+      if name == 'p4500' or name.endswith('.py'):
+        with open(name) as f:
+          for line_number, line in enumerate(f, 1):
+            line = line.rstrip('\n')
+            self.assertTrue(len(line) < 80,
+                    '{0}:{1}:{2}'.format(name, line_number, line))
 
-    def test_trailing_whitespace(self):
-        """Tests that no lines end with whitespace.
+  def test_trailing_whitespace(self):
+    """Tests that no lines end with whitespace.
 
-        This checks all files in the current directory.
-        """
-        for name in os.listdir(os.curdir):
-            if os.path.isfile(name):
-                with open(name) as f:
-                    for line_number, line in enumerate(f, 1):
-                        line = line.rstrip('\n')
-                        self.assertTrue(line == line.rstrip(),
-                                        '{0}:{1}:{2}'.format(name, line_number,
-                                                             line))
+    This checks all files in the current directory.
+    """
+    for name in os.listdir(os.curdir):
+      if os.path.isfile(name):
+        with open(name) as f:
+          for line_number, line in enumerate(f, 1):
+            line = line.rstrip('\n')
+            self.assertTrue(line == line.rstrip(),
+                    '{0}:{1}:{2}'.format(name, line_number, line))
 
-    def test_no_tab_characters(self):
-        """Tests that no lines have tab characters.
+  def test_no_tab_characters(self):
+    """Tests that no lines have tab characters.
 
-        This checks all Python files in the current directory.
-        """
-        for name in os.listdir(os.curdir):
-            if name == 'p4500' or name.endswith('.py'):
-                with open(name) as f:
-                    for line_number, line in enumerate(f, 1):
-                        line = line.rstrip('\n')
-                        self.assertTrue('\t' not in line,
-                                        '{0}:{1}:{2}'.format(name, line_number,
-                                                             line))
+    This checks all Python files in the current directory.
+    """
+    for name in os.listdir(os.curdir):
+      if name == 'p4500' or name.endswith('.py'):
+        with open(name) as f:
+          for line_number, line in enumerate(f, 1):
+            line = line.rstrip('\n')
+            self.assertTrue('\t' not in line,
+                    '{0}:{1}:{2}'.format(name, line_number, line))
 
+  def test_attribute_proper_libraries(self):
+    """Tests to make sure that we credit the proper Python libraries in our
+    README file.
+    """
+
+    # Start with our self-made libraries
+    libs_attributed = ['config', 'comparator', 'normalize', 'utils']
+
+    with open( "README" ) as f:
+      for line in f:
+        line = line.rstrip('\n')
+        if line.startswith( '** `' ):
+          line = line.lstrip( '* `' ).rstrip('` \n')
+          libs_attributed.append( line )
+
+    for name in os.listdir( os.curdir ):
+      if name == 'p4500' or name.endswith( '.py' ):
+        f = open( name )
+
+        for line in f:
+          line = line.rstrip('\n')
+          if line.startswith('import') or line.startswith('from'):
+            library_name = line.split()[1]
+
+            self.assertTrue(library_name in libs_attributed,
+                    'Missing {0} from {1}'.format(library_name, name))
 
 class TestFileDetection(unittest.TestCase):
   """Tests that WAVE, MP3, and other files are properly detected."""
