@@ -1,3 +1,11 @@
+"""
+
+`comparator.py` contains functions that are used to compare two of the
+software's normalized WAVE audio files.
+
+"""
+
+
 import numpy
 
 from config import *

@@ -1,3 +1,11 @@
+"""
+
+`normalize.py` contains functions that will help normalize MP3 and WAVE files
+into the normalized and canonical form as specified in `config.py`
+
+"""
+
+
 import audioop
 import os
 import sys
@@ -22,8 +30,6 @@ def normalize_file(path):
     The normalized mono channel WAVE file.
   """
   f = file(path)
-  #if (utils.is_wave(f.name)):
-  #  f = wav_to_mp3(f.name)
   if (utils.is_mp3(f.name)):
     f = mp3_to_wav(f.name)
   f = normalize_wave_file(f.name)
