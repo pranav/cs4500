@@ -1,3 +1,4 @@
+#!/usr/bin/python -B
 """
 
 `test.py` is a test suite to perform an assortment of tests to ensure
@@ -5,7 +6,6 @@ that this software performs according to the specification.
 
 """
 
-#!/usr/bin/python -B
 
 import math
 import numpy

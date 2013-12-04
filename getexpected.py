@@ -114,7 +114,8 @@ def main():
         tests_failed = tests_failed + 1
   print('FAILED: {0} / {1} ({2}%)'
         .format(tests_failed, tests, tests_failed * 100 // tests))
-  print('TIME: {0}:{1:.2f}'.format(int(total_seconds // 60), total_seconds % 60))
+  print('TIME: {0}:{1:.2f}'.format(int(total_seconds // 60),
+      total_seconds % 60))
 
 
 if __name__ == '__main__':
