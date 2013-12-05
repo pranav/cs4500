@@ -104,7 +104,7 @@ def print_matches(paths1, paths2):
     path1 = paths1[i]
     for j in range(len(data2)):
       path2 = paths2[j]
-      if (path1, path2) in cache or (path2, path1) in cache:
+      if (path1, path2) in cache or (path2, path1) in cache or path1 == path2:
         match = True
       else:
         mfccs1 = data1[i]
