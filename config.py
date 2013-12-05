@@ -22,6 +22,7 @@ distance calculations:
 
 """
 
+
 # Configuration normalized form
 FREQUENCY = 44100
 BITRATE = 16
